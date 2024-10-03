@@ -2801,7 +2801,7 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
         ESPTab:AddToggle("GuidingLightESP", {
             Text = "引导之光",
             Default = false,
-        }):AddColorPicker("GuildingLightEspColor", {
+        }):AddColorPicker("GuidingLightEspColor", {
             Default = Color3.new(0, 0.5, 1),
         })
     end
