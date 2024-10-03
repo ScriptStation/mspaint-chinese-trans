@@ -2502,12 +2502,12 @@ local ReachGroupBox = Tabs.Main:AddLeftGroupbox("Reach") do
     })
 
     ReachGroupBox:AddToggle("PromptClip", {
-        Text = "Prompt Clip",
+        Text = "一键互动",
         Default = false
     })
 
     ReachGroupBox:AddSlider("PromptReachMultiplier", {
-        Text = "Prompt Reach Multiplier",
+        Text = "互动距离(不确定)",
         Default = 1,
         Min = 1,
         Max = 2,
@@ -5953,12 +5953,13 @@ end)
 local MenuGroup = Tabs["UI Settings"]:AddLeftGroupbox("Menu")
 MenuGroup:AddButton("Unload", function() Library:Unload() end)
 local CreditsGroup = Tabs["UI Settings"]:AddRightGroupbox("Credits")
-CreditsGroup:AddLabel("Developers和汉化:")
+CreditsGroup:AddLabel("Developers和汉化及汉化测试:")
 CreditsGroup:AddLabel("upio - owner")
 CreditsGroup:AddLabel("deividcomsono - main script dev")
 CreditsGroup:AddLabel("mstudio45")
 CreditsGroup:AddLabel("bacalhauz")
 CreditsGroup:AddLabel("R-Exploit")
+CreditsGroup:AddLabel("NIDO_MUNCISEEK")
 
 Library.ToggleKeybind = Options.MenuKeybind
 
