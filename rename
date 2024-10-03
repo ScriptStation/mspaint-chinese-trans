@@ -1,5 +1,7 @@
---!native
---!optimize 2
+--!THIS IS NOT AN OFFICAL SCRIPT
+--!If it's infringing, I'll remove it, please find me on github
+print("If it's infringing, I'll remove it, please find me on github")
+
 local HttpService = game:GetService("HttpService")
 local baseURL = "https://raw.githubusercontent.com/notpoiu/mspaint/main"
 
