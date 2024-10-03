@@ -2528,7 +2528,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
 
     AutomationGroupBox:AddDivider()
     AutomationGroupBox:AddToggle("AutoWardrobeNotif", {
-        Text = "Auto " .. HidingPlaceName[floor.Value] .. " Notifications",
+        Text = "自动 " .. HidingPlaceName[floor.Value] .. " 提示",
         Default = false
     })
 
