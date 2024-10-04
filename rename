@@ -5961,8 +5961,8 @@ CreditsGroup:AddLabel("upio - owner")
 CreditsGroup:AddLabel("deividcomsono - main script dev")
 CreditsGroup:AddLabel("mstudio45")
 CreditsGroup:AddLabel("bacalhauz")
-CreditsGroup:AddLabel("R-Exploit")
-CreditsGroup:AddLabel("NIDO_MUNCISEEK")
+CreditsGroup:AddLabel("R-E̸XPlO҉_I̵T.")
+CreditsGroup:AddLabel("N̸I̶D̸O҉_M̸U̸N̸C̷I̵S̶E̸Ek")
 
 Library.ToggleKeybind = Options.MenuKeybind
 
