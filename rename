@@ -200,7 +200,7 @@ task.spawn(function()
                 AddonTab:UpdateWarningBox({
                     Visible = true,
                     Title = "⚠️警告⚠️",
-                    Text = "该栏及拓展并非MSPAINT/CHINESE官方制作。我们不对您将使用哪些插件负责。由于您正在执行第三方脚本，因此您将自己置于风险之中。"
+                    Text = "该栏及拓展并非MSPAINT/CHINESE官方制作。我们不对您将使用哪些插件负责。\n由于您正在执行第三方脚本，因此您将自己置于风险之中。"
                 })
             end
 
