@@ -150,7 +150,7 @@ local EntityTable = {
             ["Spawned"] = true
         },
         ["GloombatSwarm"] = {
-            ["Image"] = "108578770251369",
+            ["Image"] = "79221203116470",
             ["Spawned"] = true
         }
     },
@@ -574,31 +574,33 @@ do
             acheivement.Sound:Play()
         end
     
-        acheivement:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", options.TweenDuration, true)
-    
-        task.wait(0.8)
-    
-        acheivement.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true)
-    
-        TweenService:Create(acheivement.Frame.Glow, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
-            ImageTransparency = 1
-        }):Play()
-    
-        if options.Time ~= nil then
-            if typeof(options.Time) == "number" then
-                task.wait(options.Time)
-            elseif typeof(options.Time) == "Instance" then
-                options.Time.Destroying:Wait()
-            end
-        else
-            task.wait(5)
-        end
-    
-        acheivement.Frame:TweenPosition(UDim2.new(1.1, 0, 0, 0), "In", "Quad", 0.5, true)
-        task.wait(0.5)
-        acheivement:TweenSize(UDim2.new(1, 0, -0.1, 0), "InOut", "Quad", 0.5, true)
-        task.wait(0.5)
-        acheivement:Destroy()
+        task.spawn(function()
+            acheivement:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", options.TweenDuration, true)
+        
+            task.wait(0.8)
+        
+            acheivement.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true)
+        
+            TweenService:Create(acheivement.Frame.Glow, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
+                ImageTransparency = 1
+            }):Play()
+
+                        
+        task.spawn(function()
+            if options.Time ~= nil then
+                if typeof(options.Time) == "number" then
+                    task.wait(options.Time)
+                elseif typeof(options.Time) == "Instance" then
+                    options.Time.Destroying:Wait()
+                end
+        
+            acheivement.Frame:TweenPosition(UDim2.new(1.1, 0, 0, 0), "In", "Quad", 0.5, true)
+            task.wait(0.5)
+            acheivement:TweenSize(UDim2.new(1, 0, -0.1, 0), "InOut", "Quad", 0.5, true)
+            task.wait(0.5)
+            acheivement:Destroy()
+        end)
+                                    
     end
     
     function Script.Functions.Notifs.Doors.Warn(options)
@@ -1080,7 +1082,7 @@ do
                 Script.Functions.SolveBreakerBox(child)
             end
     
-            if isMines and Toggles.TheMinesAnticheatBypass.Value and child.Name == "Ladder" and not bypassed then
+            if isMines and Toggles.TheMinesAnticheatBypass.Value and child.Name == "Ladder" then
                 Script.Functions.ESP({
                     Type = "None",
                     Object = child,
@@ -1946,14 +1948,20 @@ do
                     progressPart.Transparency = 1
                 end
                 Script.Functions.Alert({
-                    Title = "Minecart Teleport",
-                    Description = "Minecart teleport is ready! Waiting for the minecart...",
+                    Title = "矿车传送",
+                    Description = "矿车传送准备就绪，正在等待矿车...",
     
                     Time = progressPart
-                })
-    
-                local minecartRig = camera:WaitForChild("MinecartRig", math.huge)
-                local minecartRoot = minecartRig:WaitForChild("Root", math.huge)
+                })                             
+               
+               local minecartRig
+               local minecartRoot
+               repeat task.wait(0.1) 
+                    minecartRig = camera:FindFirstChild("MinecartRig")
+                    if not minecartRig then continue end
+                    minecartRoot = minecartRig:FindFirstChild("Root")
+                until minecartRig and minecartRoot
+
     
                 if workspace:FindFirstChild("_internal_mspaint_minecart_teleport") then workspace:FindFirstChild("_internal_mspaint_minecart_teleport"):Destroy() end
                 task.wait(3)
