@@ -612,7 +612,7 @@ do
             acheivement:TweenSize(UDim2.new(1, 0, -0.1, 0), "InOut", "Quad", 0.5, true)
             task.wait(0.5)
             acheivement:Destroy()
-        end)     
+        end))
     end
     
     function Script.Functions.Notifs.Doors.Warn(options)
