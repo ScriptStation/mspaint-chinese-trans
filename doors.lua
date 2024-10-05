@@ -733,7 +733,7 @@ do
     
         local ESPManager = {
             Object = args.Object,
-            Text = args.Text or "No Text",
+            Text = args.Text or "没有文本",
             Color = args.Color or Color3.new(),
             Offset = args.Offset or Vector3.zero,
             IsEntity = args.IsEntity or false,
