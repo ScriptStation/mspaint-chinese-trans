@@ -2587,7 +2587,7 @@ end
 
 --// Exploits \\--
 
-local AntiEntityGroupBox = Tabs.Exploits:AddLeftGroupbox("Anti-Entity") do
+local AntiEntityGroupBox = Tabs.Exploits:AddLeftGroupbox("反实体") do
     AntiEntityGroupBox:AddToggle("AntiHalt", {
         Text = "反halt",
         Default = false
@@ -3461,8 +3461,8 @@ task.spawn(function()
                                     repeat task.wait() until (not character:GetAttribute("Hiding") and not character.PrimaryPart.Anchored)
 
                                     Script.Functions.Alert({
-                                        Title = "Auto Rooms",
-                                        Description = "Seems like you are stuck, trying to recalculate path...",
+                                        Title = "自动rooms",
+                                        Description = "看起来你卡住了 正在重新计算路径...",
                                         Reason = "Failed to move to waypoint",
                                     })
 
@@ -3498,7 +3498,7 @@ task.spawn(function()
                     if latestRoom.Value == 1000 then
                         Script.Functions.Alert({
                             Title = "Auto Rooms",
-                            Description = "You have reached A-1000",
+                            Description = "你已到达A1000",
                             Reason = "A-1000 reached by mspaint autorooms",
                         })
 
