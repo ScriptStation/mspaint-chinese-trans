@@ -584,18 +584,6 @@ do
             TweenService:Create(acheivement.Frame.Glow, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
                 ImageTransparency = 1
             }):Play()
-
-                        
-       task.spawn(function()
-            acheivement:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", options.TweenDuration, true)
-        
-            task.wait(0.8)
-        
-            acheivement.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true)
-        
-            TweenService:Create(acheivement.Frame.Glow, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
-                ImageTransparency = 1
-            }):Play()
         
             if options.Time ~= nil then
                 if typeof(options.Time) == "number" then
@@ -614,7 +602,6 @@ do
             acheivement:Destroy()
         end)
     end
-    
     function Script.Functions.Notifs.Doors.Warn(options)
         assert(typeof(options) == "table", "Expected a table as options argument but got " .. typeof(options))
     
