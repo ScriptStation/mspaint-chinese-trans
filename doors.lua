@@ -5930,7 +5930,9 @@ CreditsGroup:AddLabel("upio - owner")
 CreditsGroup:AddLabel("deividcomsono - main script dev")
 CreditsGroup:AddLabel("mstudio45")
 CreditsGroup:AddLabel("bacalhauz")
-
+CreditsGroup:AddLabel("R-E̸XPlO҉_I̵T. - 汉化")
+CreditsGroup:AddLabel("N̸I̶D̸O҉_M̸U̸N̸C̷I̵S̶E̸Ek - 测试/汉化帮助")
+                                            
 Library.ToggleKeybind = Options.MenuKeybind
 
 ThemeManager:SetLibrary(Library)
