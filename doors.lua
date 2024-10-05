@@ -805,7 +805,7 @@ do
             local doorEsp = Script.Functions.ESP({
                 Type = "Door",
                 Object = door:WaitForChild("Door"),
-                Text = string.format("Door %s %s", doorNumber, doorState),
+                Text = string.format("门 %s %s", doorNumber, doorState),
                 Color = Options.DoorEspColor.Value,
     
                 OnDestroy = function()
@@ -814,7 +814,7 @@ do
             })
     
             Script.FeatureConnections.Door[doorIdx] = door:GetAttributeChangedSignal("Opened"):Connect(function()
-                if doorEsp then doorEsp.SetText(string.format("Door %s [Opened]", doorNumber)) end
+                if doorEsp then doorEsp.SetText(string.format("门 %s [已打开]", doorNumber)) end
                 if Script.FeatureConnections.Door[doorIdx] then Script.FeatureConnections.Door[doorIdx]:Disconnect() end
             end)
         end
@@ -826,7 +826,7 @@ do
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = string.format("Timer Lever [+%s]", child.TakeTimer.TextLabel.Text),
+                Text = string.format("时间拉杆 [+%s]", child.TakeTimer.TextLabel.Text),
                 Color = Options.ObjectiveEspColor.Value
             })
         -- Backdoor + Hotel
@@ -834,7 +834,7 @@ do
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Key",
+                Text = "钥匙",
                 Color = Options.ObjectiveEspColor.Value
             })
         -- Hotel
@@ -842,28 +842,28 @@ do
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Electrical Key",
+                Text = "配电室钥匙",
                 Color = Options.ObjectiveEspColor.Value
             })
         elseif child.Name == "LeverForGate" then
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Gate Lever",
+                Text = "门杆",
                 Color = Options.ObjectiveEspColor.Value
             })
         elseif child.Name == "LiveHintBook" then
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Book",
+                Text = "书",
                 Color = Options.ObjectiveEspColor.Value
             })
         elseif child.Name == "LiveBreakerPolePickup" then
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Breaker",
+                Text = "断路器",
                 Color = Options.ObjectiveEspColor.Value
             })
         -- Mines
@@ -871,21 +871,21 @@ do
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Generator",
+                Text = "发电机",
                 Color = Options.ObjectiveEspColor.Value
             })
         elseif child.Name == "MinesGateButton" then
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Gate Power Button",
+                Text = "门按钮",
                 Color = Options.ObjectiveEspColor.Value
             })
         elseif child.Name == "FuseObtain" then
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = "Fuse",
+                Text = "保险丝",
                 Color = Options.ObjectiveEspColor.Value
             })
         elseif child.Name == "MinesAnchor" then
@@ -895,7 +895,7 @@ do
                 Script.Functions.ESP({
                     Type = "Objective",
                     Object = child,
-                    Text = string.format("Anchor %s", sign.TextLabel.Text),
+                    Text = string.format("锚 %s", sign.TextLabel.Text),
                     Color = Options.ObjectiveEspColor.Value
                 })
             end
@@ -906,7 +906,7 @@ do
                 Script.Functions.ESP({
                     Type = "Objective",
                     Object = wheel,
-                    Text = "Water Pump",
+                    Text = "水闸",
                     Color = Options.ObjectiveEspColor.Value
                 })
             end
@@ -947,7 +947,7 @@ do
     function Script.Functions.ChestESP(chest)
         local text = chest.Name:gsub("Box", ""):gsub("_Vine", ""):gsub("_Small", "")
         local locked = chest:GetAttribute("Locked")
-        local state = if locked then "[Locked]" else ""
+        local state = if locked then "[上锁的]" else ""
     
         Script.Functions.ESP({
             Type = "Chest",
@@ -982,7 +982,7 @@ do
         Script.Functions.ESP({
             Type = "HidingSpot",
             Object = spot,
-            Text = if spot:GetAttribute("LoadModule") == "Bed" then "Bed" else HidingPlaceName[floor.Value],
+            Text = if spot:GetAttribute("LoadModule") == "Bed" then "床" else HidingPlaceName[floor.Value],
             Color = Options.HidingSpotEspColor.Value
         })
     end
@@ -991,7 +991,7 @@ do
         Script.Functions.ESP({
             Type = "Gold",
             Object = gold,
-            Text = string.format("Gold [%s]", gold:GetAttribute("GoldValue")),
+            Text = string.format("金子 [%s]", gold:GetAttribute("GoldValue")),
             Color = Options.GoldEspColor.Value
         })
     end
@@ -1011,7 +1011,7 @@ do
         local guidanceEsp = Script.Functions.ESP({
             Type = "Guiding",
             Object = part,
-            Text = "Guidance",
+            Text = "引导之光",
             Color = Options.GuidingLightEspColor.Value
         })
     
@@ -2553,7 +2553,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
         end)
     elseif isMines then
         AutomationGroupBox:AddToggle("AutoAnchorSolver", {
-            Text = "Auto Anchor Solver",
+            Text = "自动锚点求解器",
             Default = false
         })
     end
@@ -5055,24 +5055,24 @@ Library:GiveSignal(workspace.ChildAdded:Connect(function(child)
 
                     if Options.NotifyEntity.Value[shortName] == true then
                         Script.Functions.Alert({
-                            Title = "ENTITIES",
-                            Description = shortName .. " has spawned!",
-                            Reason = (not EntityTable.NotifyReason[child.Name].Spawned and "Go find a hiding place!" or nil),
+                            Title = "!实体!",
+                            Description = shortName .. " 已经生成!",
+                            Reason = (not EntityTable.NotifyReason[child.Name].Spawned and "去找一个躲藏点!" or nil),
                             Image = EntityTable.NotifyReason[child.Name].Image,
 
                             Warning = true
                         })
 
                         if Toggles.NotifyChat.Value then
-                            RBXGeneral:SendAsync(shortName .. " has spawned!")
+                            RBXGeneral:SendAsync(shortName .. " 已经生成!")
                         end
                     end
                 end
             end)
         elseif EntityTable.NotifyMessage[child.Name] and Options.NotifyEntity.Value[shortName] then
             Script.Functions.Alert({
-                Title = "ENTITIES",
-                Description = shortName .. " has spawned!",
+                Title = "实体",
+                Description = shortName .. " 已经生成!",
                 Reason = (not EntityTable.NotifyReason[child.Name].Spawned and "Go find a hiding place!" or nil),
                 Image = EntityTable.NotifyReason[child.Name].Image,
 
