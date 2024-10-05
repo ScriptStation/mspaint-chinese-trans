@@ -586,21 +586,33 @@ do
             }):Play()
 
                         
-        task.spawn(function()
+       task.spawn(function()
+            acheivement:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", options.TweenDuration, true)
+        
+            task.wait(0.8)
+        
+            acheivement.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true)
+        
+            TweenService:Create(acheivement.Frame.Glow, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In),{
+                ImageTransparency = 1
+            }):Play()
+        
             if options.Time ~= nil then
                 if typeof(options.Time) == "number" then
                     task.wait(options.Time)
                 elseif typeof(options.Time) == "Instance" then
                     options.Time.Destroying:Wait()
                 end
+            else
+                task.wait(5)
+            end
         
             acheivement.Frame:TweenPosition(UDim2.new(1.1, 0, 0, 0), "In", "Quad", 0.5, true)
             task.wait(0.5)
             acheivement:TweenSize(UDim2.new(1, 0, -0.1, 0), "InOut", "Quad", 0.5, true)
             task.wait(0.5)
             acheivement:Destroy()
-        end)
-                                    
+        end)     
     end
     
     function Script.Functions.Notifs.Doors.Warn(options)
