@@ -59,7 +59,7 @@ if mapping.exclusions and mapping.exclusions[tostring(game.PlaceId)] then
     scriptPath = mapping.exclusions[tostring(game.PlaceId)]
 end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/main/doors.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/mspaint-chinese-trans/main/doors.lua"))()
 
 
 -- Addons (this is BETA, expect stuff to change) --
