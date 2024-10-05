@@ -9,7 +9,6 @@ export type gameMapping = {
 if not getgenv().ExecutorSupport then
     loadstring(game:HttpGet(baseURL .. "/executorTest.lua"))()
 end
-local baseURL = "https://raw.githubusercontent.com/ScriptStation/main"
 if not getgenv().BloxstrapRPC then
     local BloxstrapRPC = {}
 
