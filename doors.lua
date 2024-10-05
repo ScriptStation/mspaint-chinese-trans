@@ -5278,7 +5278,7 @@ Library:GiveSignal(localPlayer.CharacterAdded:Connect(function(newCharacter)
                 Description = "你已复活，假复活已停止运作.",
                 Reason = "重新打开他以开始假复活",
 
-                LinoriaMessage = "Fake Revive has stopped working, enable it again to start fake revive",
+                LinoriaMessage = "你已复活，假复活已停止运作, 重新打开他以开始假复活",
             })
             Toggles.FakeRevive:SetValue(false)
         end
@@ -5295,7 +5295,7 @@ end))
 
 Library:GiveSignal(localPlayer.OnTeleport:Connect(function(state)
     if (state == Enum.TeleportState.RequestedFromServer or state == state == Enum.TeleportState.Started) and Toggles.ExecuteOnTeleport.Value then
-        queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/notpoiu/mspaint/main/main.lua"))()]])
+        queue_on_teleport([[loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptstation/mspint-chinese-trans/rename"))()]])
     end
 end))
 
@@ -5323,11 +5323,11 @@ Library:GiveSignal(localPlayer:GetAttributeChangedSignal("CurrentRoom"):Connect(
     if isMines and bypassed and currentRoomModel:GetAttribute("RawName") == "HaltHallway" then
         bypassed = false
         Script.Functions.Alert({
-            Title = "Anticheat Bypass",
-            Description = "Halt has broken anticheat bypass.",
-            Reason = "Please go on a ladder again to fix it.",
+            Title = "反作弊绕过",
+            Description = "Halt破坏了反作弊绕过.",
+            Reason = "请再次去梯子修复他.",
 
-            LinoriaMessage = "Halt has broken anticheat bypass, please go on a ladder again to fix it.",
+            LinoriaMessage = "Halt破坏了反作弊绕过，请再次去梯子修复他.",
         })
 
         Options.SpeedSlider:SetMax(Toggles.SpeedBypass.Value and 45 or (Toggles.EnableJump.Value and 3 or 7))
@@ -5683,9 +5683,9 @@ Library:GiveSignal(RunService.RenderStepped:Connect(function()
                         local result = Anchor:FindFirstChildOfClass("RemoteFunction"):InvokeServer(CurrentGameState.AnchorCode)
                         if result then
                             Script.Functions.Alert({
-                                Title = "Auto Anchor Solver",
-                                Description = "Solved Anchor " .. CurrentAnchor .. " successfully!",
-                                Reason = "Solved anchor with the code " .. CurrentGameState.AnchorCode,
+                                Title = "自动锚点",
+                                Description = "自动锚点： " .. CurrentAnchor .. " 成功!",
+                                Reason = "使用代码解决锚点：" .. CurrentGameState.AnchorCode,
                             })
                         end
                     end)
@@ -5697,8 +5697,8 @@ Library:GiveSignal(RunService.RenderStepped:Connect(function()
             local HoldingItem = Script.Temp.HoldingItem
             if HoldingItem and not isnetowner(HoldingItem) then
                 Script.Functions.Alert({
-                    Title = "Banana/Jeff Throw",
-                    Description = "You are no longer holding the item due to network owner change!",
+                    Title = "扔 香蕉/Jeff",
+                    Description = "由于网络所有者更改，您不再持有该项目!",
                 })
                 Script.Temp.HoldingItem = nil
             end
@@ -5919,7 +5919,7 @@ local CreditsGroup = Tabs["UI Settings"]:AddRightGroupbox("积分")
 
 MenuGroup:AddToggle("ExecuteOnTeleport", { Default = false, Text = "传送时执行", Visible = ExecutorSupport["queue_on_teleport"] })
 MenuGroup:AddToggle("KeybindMenuOpen", { Default = false, Text = "打开键位菜单", Callback = function(value) Library.KeybindFrame.Visible = value end})
-MenuGroup:AddToggle("ShowCustomCursor", {Text = "Custom Cursor", Default = true, Callback = function(Value) Library.ShowCustomCursor = Value end})
+MenuGroup:AddToggle("ShowCustomCursor", {Text = "自定义光标", Default = true, Callback = function(Value) Library.ShowCustomCursor = Value end})
 MenuGroup:AddDivider()
 MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", { Default = "RightShift", NoUI = true, Text = "Menu keybind" })
 MenuGroup:AddButton("加入dc", function()
@@ -5933,8 +5933,8 @@ end)
 MenuGroup:AddButton("Unload", function() Library:Unload() end)
 
 CreditsGroup:AddLabel("Developers:")
-CreditsGroup:AddLabel("upio - owner")
-CreditsGroup:AddLabel("deividcomsono - main script dev")
+CreditsGroup:AddLabel("upio - 所有者")
+CreditsGroup:AddLabel("deividcomsono - 脚本主测试")
 CreditsGroup:AddLabel("mstudio45")
 CreditsGroup:AddLabel("bacalhauz")
 CreditsGroup:AddLabel("R-E̸XPlO҉_I̵T. - 汉化")
