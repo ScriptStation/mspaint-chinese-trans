@@ -1,5 +1,4 @@
 local HttpService = game:GetService("HttpService")
-local baseURL = "https://raw.githubusercontent.com/notpoiu/mspaint/main"
 
 export type gameMapping = {
     exclusions: table?,
@@ -7,7 +6,7 @@ export type gameMapping = {
 }
 
 if not getgenv().ExecutorSupport then
-    loadstring(game:HttpGet(baseURL .. "/executorTest.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/notpoiu/mspaint/main/executorTest.lua"))()
 end
 
 if not getgenv().BloxstrapRPC then
@@ -53,14 +52,14 @@ if not getgenv().BloxstrapRPC then
     getgenv().BloxstrapRPC = BloxstrapRPC
 end
 
-local mapping: gameMapping = HttpService:JSONDecode(game:HttpGet(baseURL .. "/mappings/" .. game.GameId .. ".json"))
+local mapping: gameMapping = HttpService:JSONDecode(game:HttpGet"https://raw.githubusercontent.com/notpoiu/mspaint/main/mappings/" .. game.GameId .. ".json"))
 local scriptPath = mapping.main
 
 if mapping.exclusions and mapping.exclusions[tostring(game.PlaceId)] then
     scriptPath = mapping.exclusions[tostring(game.PlaceId)]
 end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/mspaint-chinese-trans/refs/heads/main/doors.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/mspaint-chinese-trans/main/doors.lua"))()
 
 
 -- Addons (this is BETA, expect stuff to change) --
