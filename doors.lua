@@ -20,7 +20,8 @@ local Workspace = game:GetService("Workspace")
 --// Loading Wait \\--
 if not game:IsLoaded() then game.Loaded:Wait() end
 if Players.LocalPlayer and Players.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and Players.LocalPlayer.PlayerGui.LoadingUI.Enabled then
-    repeat task.wait() until not game.Players.LocalPlayer.PlayerGui.LoadingUI.Enabled
+    print("[mspaint] 等待游戏加载中...")
+    repeat task.wait() until not Players.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and true or not Players.LocalPlayer.PlayerGui.LoadingUI.Enabled
 end
 
 --// Variables \\--
@@ -43,6 +44,7 @@ local Script = {
         SideEntity = {},
         Gold = {},
         Guiding = {},
+        DroppedItem = {},
         Item = {},
         Objective = {},
         Player = {},
@@ -152,6 +154,10 @@ local EntityTable = {
         ["GloombatSwarm"] = {
             ["Image"] = "79221203116470",
             ["Spawned"] = true
+        },
+        ["HaltRoom"] = {
+            ["Image"] = "11331795398",
+            ["Spawned"] = true
         }
     },
     ["NoCheck"] = {
@@ -211,7 +217,8 @@ local HidingPlaceName = {
     ["Hotel"] = "柜子",
     ["Backdoor"] = "柜子",
     ["Fools"] = "柜子",
-
+    ["Retro"] = "柜子"
+    
     ["Rooms"] = "柜子",
     ["Mines"] = "柜子"
 }
@@ -318,14 +325,15 @@ local latestRoom = gameData:WaitForChild("LatestRoom")
 
 local liveModifiers = ReplicatedStorage:WaitForChild("LiveModifiers")
 
-local floorReplicated = if not isFools then ReplicatedStorage:WaitForChild("FloorReplicated") else nil
-local remotesFolder = if not isFools then ReplicatedStorage:WaitForChild("RemotesFolder") else ReplicatedStorage:WaitForChild("EntityInfo")
-
 local isMines = floor.Value == "Mines"
 local isRooms = floor.Value == "Rooms"
 local isHotel = floor.Value == "Hotel"
 local isBackdoor = floor.Value == "Backdoor"
 local isFools = floor.Value == "Fools"
+local isRetro = floor.Value == "Retro"
+
+local floorReplicated = if not isFools then ReplicatedStorage:WaitForChild("FloorReplicated") else nil
+local remotesFolder = if not isFools then ReplicatedStorage:WaitForChild("RemotesFolder") else ReplicatedStorage:WaitForChild("EntityInfo")
 
 --// Player DOORS Variables \\--
 local currentRoom = localPlayer:GetAttribute("CurrentRoom") or 0
@@ -934,9 +942,9 @@ do
         })
     end
     
-    function Script.Functions.ItemESP(item)
+    function Script.Functions.ItemESP(item, dropped)
         Script.Functions.ESP({
-            Type = "Item",
+            Type = dropped and "扔掉的物品" or "Item",,
             Object = item,
             Text = Script.Functions.GetShortName(item.Name),
             Color = Options.ItemEspColor.Value
@@ -944,7 +952,7 @@ do
     end
     
     function Script.Functions.ChestESP(chest)
-        local text = chest.Name:gsub("Box", ""):gsub("_Vine", ""):gsub("_Small", "")
+        local text = chest.Name:gsub("Box", ""):gsub("_Vine", ""):gsub("_Small", ""):gsub("Locked", "")
         local locked = chest:GetAttribute("Locked")
         local state = if locked then "[上锁的]" else ""
     
@@ -2036,6 +2044,14 @@ do
     end
     
     function Script.Functions.SetupRoomConnection(room)
+        if Options.NotifyEntity.Value["Halt Room"] and room:GetAttribute("RawName") == "HaltHallway" then
+            Script.Functions.Alert({
+                Title = "实体",
+                Description = "Halt 将会生成于下一个房间!",
+                Image = EntityTable.NotifyReason["HaltRoom"].Image,
+                Warning = true
+            })
+        end
         for _, child in pairs(room:GetDescendants()) do
             task.spawn(function()
                 if Toggles.DeleteSeek.Value and rootPart and child.Name == "Collision" then
@@ -2059,7 +2075,7 @@ do
     
     function Script.Functions.SetupDropConnection(drop)
         if Toggles.ItemESP.Value then
-            Script.Functions.ItemESP(drop)
+            Script.Functions.ItemESP(drop,true)
         end
     
         task.spawn(function()
@@ -2480,6 +2496,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
         Text = "自动 " .. HidingPlaceName[floor.Value],
         Default = false,
     Tooltip = "Might fail with multiple entities (Rush & Ambush, 3+ Rush spawns)"
+    if isRetro and prompt.Parent.Parent.Name == "RetroWardrobe" then continue end
     }):AddKeyPicker("AutoWardrobeKey", {
         Mode = "Toggle",
         Default = "Q",
@@ -2672,6 +2689,15 @@ local BypassGroupBox = Tabs.Exploits:AddRightGroupbox("绕过") do
         Default = false,
         Visible = not isFools
     })
+    BypassGroupBox:AddToggle("InfCrucifix", {
+        Text = "无限十字架",
+        Default = false,
+        Visible = not isFools,
+        Tooltip = "不稳定 可能杀死你.",
+        Risky = true
+    })
+
+    BypassGroupBox:AddDivider()
 
     BypassGroupBox:AddToggle("FakeRevive", {
         Text = "假复活",
@@ -2838,7 +2864,7 @@ local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
     local NotifyTab = NotifyTabBox:AddTab("提示") do
         NotifyTab:AddDropdown("NotifyEntity", {
             AllowNull = true,
-            Values = {"Blitz", "Lookman", "Rush", "Ambush", "Eyes", "A60", "A120", "Jeff The Killer", "Gloombat Swarm"},
+            Values = {"Blitz", "Lookman", "Rush", "Ambush", "Eyes", "Halt Room","A60", "A120", "Jeff The Killer", "Gloombat Swarm"},
             Default = {},
             Multi = true,
 
@@ -4588,7 +4614,7 @@ Toggles.ItemESP:OnChanged(function(value)
     if value then
         for _, item in pairs(workspace.Drops:GetChildren()) do
             if Script.Functions.ItemCondition(item) then
-                Script.Functions.ItemESP(item)
+                Script.Functions.ItemESP(item,true)
             end
         end
 
@@ -4601,6 +4627,10 @@ Toggles.ItemESP:OnChanged(function(value)
             end
         end
     else
+        for _, esp in pairs(Script.ESPTable.DroppedItem) do
+            esp.Destroy()
+        end
+
         for _, esp in pairs(Script.ESPTable.Item) do
             esp.Destroy()
         end
@@ -4608,6 +4638,14 @@ Toggles.ItemESP:OnChanged(function(value)
 end)
 
 Options.ItemEspColor:OnChanged(function(value)
+    for _, esp in pairs(Script.ESPTable.DroppedItem) do
+        esp.Update({
+            FillColor = value,
+            OutlineColor = value,
+            TextColor = value,
+        })
+    end
+
     for _, esp in pairs(Script.ESPTable.Item) do
         esp.Update({
             FillColor = value,
@@ -4676,7 +4714,8 @@ Toggles.HidingSpotESP:OnChanged(function(value)
         local currentRoomModel = workspace.CurrentRooms:FindFirstChild(currentRoom)
         if currentRoomModel then
             for _, wardrobe in pairs(currentRoomModel:GetDescendants()) do
-                if wardrobe:GetAttribute("LoadModule") == "Wardrobe" or wardrobe:GetAttribute("LoadModule") == "Bed" or wardrobe.Name == "Rooms_Locker" then
+                
+                if wardrobe:GetAttribute("LoadModule") == "Wardrobe" or wardrobe:GetAttribute("LoadModule") == "Bed" or wardrobe.Name == "Rooms_Locker" or wardrobe.Name == "RetroWardrobe" then
                     Script.Functions.HidingSpotESP(wardrobe)
                 end
             end
@@ -4989,7 +5028,7 @@ Library:GiveSignal(ProximityPromptService.PromptTriggered:Connect(function(promp
 
             task.spawn(function()
                 equippedTool.Destroying:Wait() 
-                task.wait(0.15)
+                task.wait(0.1)
 
                 local itemPickupPrompt = Script.Functions.GetNearestPromptWithCondition(function(prompt)
                     return prompt.Name == "ModulePrompt" and prompt.Parent:GetAttribute("Tool_ID") == toolId
@@ -5052,7 +5091,7 @@ Library:GiveSignal(workspace.ChildAdded:Connect(function(child)
                         Script.Functions.EntityESP(child)  
                     end
 
-                    if Options.NotifyEntity.Value[shortName] == true then
+                    if Options.NotifyEntity.Value[shortName] then
                         Script.Functions.Alert({
                             Title = "!实体!",
                             Description = shortName .. " 已经生成!",
@@ -5104,7 +5143,7 @@ Library:GiveSignal(workspace.ChildAdded:Connect(function(child)
             end
         end
 
-        if (child.Name == "RushMoving" or child.Name == "AmbushMoving") and Toggles.InfItems.Value and alive and character then
+        if (child.Name == "RushMoving" or child.Name == "AmbushMoving") and Toggles.InfCrucifix.Value and alive and character then
             task.wait(1.5)
             
             local hasStoppedMoving = false --entity has stoped
@@ -5125,7 +5164,7 @@ Library:GiveSignal(workspace.ChildAdded:Connect(function(child)
             local entityName = child.Name
 
             local crucifixConnection; crucifixConnection = RunService.RenderStepped:Connect(function(deltaTime)
-                if not Toggles.InfItems.Value or not alive or not character then crucifixConnection:Disconnect() return end
+                if not Toggles.InfCrucifix.Value or not alive or not character then crucifixConnection:Disconnect() return end
 
                 local currentTimer = tick()
                 frameCount += 1 
@@ -5396,7 +5435,7 @@ Library:GiveSignal(localPlayer:GetAttributeChangedSignal("CurrentRoom"):Connect(
                 task.spawn(Script.Functions.ChestESP, asset)
             end
 
-            if Toggles.HidingSpotESP.Value and (asset:GetAttribute("LoadModule") == "Wardrobe" or asset:GetAttribute("LoadModule") == "Bed" or asset.Name == "Rooms_Locker") then
+            if Toggles.HidingSpotESP.Value and (asset:GetAttribute("LoadModule") == "Wardrobe" or asset:GetAttribute("LoadModule") == "Bed" or asset.Name == "Rooms_Locker" or asset.Name == "RetroWardrobe") then
                 Script.Functions.HidingSpotESP(asset)
             end
 
@@ -5605,8 +5644,7 @@ Library:GiveSignal(RunService.RenderStepped:Connect(function()
                 if prompt.Parent:GetAttribute("JeffShop") then continue end
                 if prompt.Parent:GetAttribute("PropType") == "Battery" and ((character:FindFirstChildOfClass("Tool") and character:FindFirstChildOfClass("Tool"):GetAttribute("RechargeProp") ~= "Battery") or character:FindFirstChildOfClass("Tool") == nil) then continue end 
                 if prompt.Parent:GetAttribute("PropType") == "Heal" and humanoid and humanoid.Health == humanoid.MaxHealth then continue end
-                if prompt:FindFirstAncestorOfClass("Model") and prompt:FindFirstAncestorOfClass("Model").Name == "DoorFake" then continue end
-
+                if isRetro and prompt.Parent.Parent.Name == "RetroWardrobe" then continue end
                 task.spawn(function()
                     -- checks if distance can interact with prompt and if prompt can be interacted again
                     if Script.Functions.DistanceFromCharacter(prompt.Parent) < prompt.MaxActivationDistance and (not prompt:GetAttribute("Interactions" .. localPlayer.Name) or PromptTable.Aura[prompt.Name] or table.find(PromptTable.AuraObjects, prompt.Parent.Name)) then
