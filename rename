@@ -1,5 +1,7 @@
+local branch = getgenv().mspaint_dev_mode and "dev" or "main"
+
 local HttpService = game:GetService("HttpService")
-local baseURL = "https://raw.githubusercontent.com/notpoiu/mspaint/main"
+local baseURL = "https://raw.githubusercontent.com/notpoiu/mspaint/" .. branch
 
 export type gameMapping = {
     exclusions: table?,
@@ -9,6 +11,7 @@ export type gameMapping = {
 if not getgenv().ExecutorSupport then
     loadstring(game:HttpGet(baseURL .. "/executorTest.lua"))()
 end
+
 if not getgenv().BloxstrapRPC then
     local BloxstrapRPC = {}
 
@@ -59,10 +62,11 @@ if mapping.exclusions and mapping.exclusions[tostring(game.PlaceId)] then
     scriptPath = mapping.exclusions[tostring(game.PlaceId)]
 end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/mspaint-chinese-trans/main/doors.lua"))()
+loadstring(game:HttpGet(baseURL .. scriptPath))()
 
 
 -- Addons (this is BETA, expect stuff to change) --
+if getgenv().mspaint_disable_addons then return end
 task.spawn(function()
     local supportsFileSystem = (ExecutorSupport["isfile"] and ExecutorSupport["delfile"] and ExecutorSupport["listfiles"] and ExecutorSupport["writefile"] and ExecutorSupport["makefolder"] and ExecutorSupport["isfolder"])
     
@@ -71,9 +75,14 @@ task.spawn(function()
         return
     end
 
-    if not isfolder("mspaint/addons") then return end
+    if not isfolder("mspaint/addons") then
+        print("[mspaint] Addons folder doesn't exist. Creating...")
+        makefolder("mspaint/addons")
+        return
+    end
     
     repeat task.wait() until getgenv().mspaint_loaded == true
+    print("[mspaint] Loading addons...")
 
     -- Functions
     local function getGameAddonPath(path: string)
@@ -156,10 +165,29 @@ task.spawn(function()
     end
 
     local gameAddonPath = getGameAddonPath(scriptPath)
+    print("[mspaint] Game addon path: " .. gameAddonPath)
+    
     local AddonTab, LastGroupbox = nil, "Right"
 
-    for _, file in pairs(listfiles("mspaint\\addons")) do
-        if file:sub(#file - 3) ~= ".lua" and file:sub(#file - 4) ~= ".luau" then continue end
+    local function createAddonTab(hasAddons: boolean)
+        if AddonTab ~= nil then return end -- tab was already created
+        local addonsText = ""此选项卡适用于为 mspaint 制作的 ⚠️非官方⚠️ 插件。我们不对您将使用哪些插件负责。您正在执行第三方脚本，因此您将自己置于风险之中
+."
+        if not hasAddons then
+            addonsText = "Your addons FOLDER is empty!"
+        end
+        AddonTab = getgenv().Library.Window:AddTab("Addons [BETA]")
+        AddonTab:UpdateWarningBox({
+            Visible = true,
+            Title = "WARNING",
+            Text = addonsText
+        })
+    end
+
+    local containAddonsLoaded = false
+    for _, file in pairs(listfiles("mspaint/addons")) do
+        print("[mspaint] Loading addon '" .. string.gsub(file, "mspaint/addons/", "") .. "'...")
+        if file:sub(#file - 3) ~= ".lua" and file:sub(#file - 4) ~= ".luau" and file:sub(#file - 7) ~= ".lua.txt" then continue end
 
         local success, errorMessage = pcall(function()
             local fileContent = readfile(file)
@@ -190,14 +218,7 @@ task.spawn(function()
                 addon.Title = addon.Name;
             end
             
-            if not AddonTab then
-                AddonTab = getgenv().Library.Window:AddTab("Addons [BETA]")
-                AddonTab:UpdateWarningBox({
-                    Visible = true,
-                    Title = "⚠️警告⚠️",
-                    Text = "此选项卡适用于为 mspaint 制作的 ⚠️非官方⚠️ 插件。我们不对您将使用哪些插件负责。您正在执行第三方脚本，因此您将自己置于风险之中"
-                })
-            end
+            if not AddonTab then createAddonTab(true) end
 
             local AddonGroupbox = LastGroupbox == "Right" and AddonTab:AddLeftGroupbox(addon.Title) or AddonTab:AddRightGroupbox(addon.Title);
             LastGroupbox = LastGroupbox == "Right" and "Left" or "Right";
@@ -219,6 +240,9 @@ task.spawn(function()
 
         if not success then
             warn("[mspaint] Failed to load addon '" .. string.gsub(file, "mspaint/addons/", "") .. "':", errorMessage)
+        else
+            containAddonsLoaded = true
         end
     end
+    createAddonTab(containAddonsLoaded)
 end)
