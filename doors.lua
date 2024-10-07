@@ -2422,7 +2422,7 @@ end
 
 --// Main \\--
 
-local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
+local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("玩家") do
     PlayerGroupBox:AddSlider("SpeedSlider", {
         Text = "速度上限",
         Default = 0,
