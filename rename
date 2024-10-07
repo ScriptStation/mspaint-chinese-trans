@@ -166,7 +166,7 @@ task.spawn(function()
 
     local function createAddonTab(hasAddons: boolean)
         if AddonTab ~= nil then return end -- tab was already created
-        local addonsText = ""此选项卡适用于为 mspaint 制作的 ⚠️非官方⚠️ 插件。我们不对您将使用哪些插件负责。您正在执行第三方脚本，因此您将自己置于风险之中
+        local addonsText = "此选项卡适用于为 mspaint 制作的 ⚠️非官方⚠️ 插件。我们不对您将使用哪些插件负责。您正在执行第三方脚本，因此您将自己置于风险之中
 ."
         if not hasAddons then
             addonsText = "Your addons FOLDER is empty!"
