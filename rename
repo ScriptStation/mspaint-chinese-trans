@@ -1,12 +1,10 @@
-local HttpService = game:GetService("HttpService")
-
 export type gameMapping = {
     exclusions: table?,
     main: string
 }
 
 if not getgenv().ExecutorSupport then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/notpoiu/mspaint/main/executorTest.lua"))()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/notpoiu/mspaint/main/executorTest.lua"))()
 end
 
 if not getgenv().BloxstrapRPC then
