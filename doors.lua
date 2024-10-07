@@ -2667,7 +2667,7 @@ local AntiEntityGroupBox = Tabs.Exploits:AddLeftGroupbox("反实体") do
     })
 
     AntiEntityGroupBox:AddToggle("AntiHearing", {
-        Text = "反Figure听觉,
+        Text = "反Figure听觉",
         Default = false,
         Visible = not isFools
     })
