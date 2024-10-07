@@ -3007,14 +3007,14 @@ end
 --// Floor \\--
 task.spawn(function()
     if isHotel then
-        local Hotel_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("Anti-Entity") do
+        local Hotel_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("反实体") do
             Hotel_AntiEntityGroupBox:AddToggle("AntiSeekObstructions", {
                 Text = "反SEEK触手",
                 Default = false
             })
         end
 
-        local Hotel_BypassGroupBox = Tabs.Floor:AddLeftGroupbox("Bypass") do
+        local Hotel_BypassGroupBox = Tabs.Floor:AddLeftGroupbox("绕过") do
             Hotel_BypassGroupBox:AddToggle("AvoidRushAmbush", {
                 Text = "躲避rush/ambush",
                 Tooltip = "不在温室工作 :(",
@@ -3023,7 +3023,7 @@ task.spawn(function()
             })
         end
 
-        local Hotel_ModifiersGroupBox = Tabs.Floor:AddRightGroupbox("Modifiers") do
+        local Hotel_ModifiersGroupBox = Tabs.Floor:AddRightGroupbox("模组") do
             Hotel_ModifiersGroupBox:AddToggle("AntiA90", {
                 Text = "反-A90",
                 Default = false
@@ -3066,7 +3066,7 @@ task.spawn(function()
             if jamminEffect then jamminEffect.Enabled = not value end
         end)
     elseif isMines then
-        local Mines_MovementGroupBox = Tabs.Floor:AddLeftGroupbox("Movement") do
+        local Mines_MovementGroupBox = Tabs.Floor:AddLeftGroupbox("移动") do
             Mines_MovementGroupBox:AddToggle("FastLadder", {
                 Text = "快速梯子",
                 Default = false
@@ -3081,7 +3081,7 @@ task.spawn(function()
             })
         end
 
-        local Mines_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("Anti-Entity") do
+        local Mines_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("反实体") do
             Mines_AntiEntityGroupBox:AddToggle("AntiGiggle", {
                 Text = "反Giggle",
                 Default = false
@@ -3098,7 +3098,7 @@ task.spawn(function()
             })
         end
 
-        local Mines_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("Automation") do
+        local Mines_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("自动化") do
             Mines_AutomationGroupBox:AddButton({
                 Text = "击败200",
                 Func = function()
@@ -3375,7 +3375,7 @@ task.spawn(function()
             })
         end
 
-        local Rooms_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("Automation") do
+        local Rooms_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("自动化") do
             Rooms_AutomationGroupBox:AddToggle("AutoRooms", {
                 Text = "自动Rooms",
                 Default = false
