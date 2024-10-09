@@ -37,7 +37,7 @@ local Script = {
         Pump = {},
         RootPart = {},
     },
-
+    
     CustomControls = {
         GamepadMoveVector = Vector3.zero,
         ThumbstickMoveVector = Vector3.zero,
@@ -115,7 +115,7 @@ local SuffixPrefixes = {
     ["Swarm"] = " 群",
 }
 local PrettyFloorName = {
-    ["Fools"] = "超级困难模式",
+    ["Fools"] = "SuperHardMode",
 }
 
 
