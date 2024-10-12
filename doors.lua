@@ -415,7 +415,7 @@ local Options = getgenv().Linoria.Options
 local Toggles = getgenv().Linoria.Toggles
 
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MS-ESP/refs/heads/main/source.lua"))()
-
+local inwhere="doors"
 if isHotel then
     local inwhere = "酒店-Floor 1"
 elseif isMines then
@@ -424,9 +424,10 @@ elseif isBackdoor then
     local inwhere = "后门-Floor -1"
 elseif isRooms then
     local inwhere = "The Rooms"
-
+end
+print(inwhere)
 local Window = Library:CreateWindow({
-    Title = "Mspaint v2 | "..inwhere,
+    Title = "Mspaint v2 |".. inwhere,
     Center = true,
     AutoShow = true,
     Resizable = true,
@@ -2941,8 +2942,7 @@ local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("氛围") do
     })
 
     AmbientGroupBox:AddToggle("AntiLag", {
-        Text = "饭卡顿",
-        Tooltip = "让你的DOORS画质改成OPPO A5玩暗区的画质"
+        Text = "反卡顿",
         Default = false,
     })
 end
@@ -6345,7 +6345,8 @@ elseif not isfolder("mspaint/doors/backdoor") then
     makefolder("mspaint/doors/backdoor")
 elseif not isfolder("mspaint/doors/rooms") then
     makefolder("mspaint/doors/rooms")
-elseif isHotel then
+end
+if isHotel then
     SaveManager:SetFolder("mspaint/doors/hotel")
 elseif isMines then
     SaveManager:SetFolder("mspaint/doors/mines")
