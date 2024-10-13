@@ -1,3 +1,4 @@
+
 --!native
 --!optimize 2
 
@@ -3018,7 +3019,7 @@ local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
         })
     end
 
-    local NotifySettingsTab = NotifyTabBox:AddTab("Settings") do
+    local NotifySettingsTab = NotifyTabBox:AddTab("设置") do
         NotifySettingsTab:AddToggle("NotifyChat", {
             Text = "聊天栏提示",
             Tooltip = "实体和密码锁密码",
@@ -3113,7 +3114,7 @@ local SelfTabBox = Tabs.Visuals:AddRightTabbox() do
         })
     end
 
-    local EffectsTab = SelfTabBox:AddTab("Effects") do
+    local EffectsTab = SelfTabBox:AddTab("效果") do
         EffectsTab:AddToggle("NoGlitchEffect", {
             Text = "无Glitch效果",
             Default = false
