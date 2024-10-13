@@ -2985,7 +2985,8 @@ local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("氛围") do
     })
 
     AmbientGroupBox:AddToggle("AntiLag", {
-        Text = "反卡顿"
+        Text = "反卡顿",
+	Tooltip = "让你变成OPPOA5玩暗区突围的画质",
         Default = false,
     })
 end
