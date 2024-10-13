@@ -9390,8 +9390,8 @@ local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("氛围") do
     })
 
     AmbientGroupBox:AddToggle("AntiLag", {
-        Text = "饭卡顿",
-        Tooltip = "让你的DOORS画质改成OPPO A5玩暗区的画质"
+        Text = "反卡顿",
+        Tooltip = "让你的DOORS画质改成OPPO A5玩暗区的画质",
         Default = false,
     })
 end
