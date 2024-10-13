@@ -364,6 +364,18 @@ local isBackdoor = floor.Value == "Backdoor"
 local isFools = floor.Value == "Fools"
 local isRetro = floor.Value == "Retro"
 
+local inwhere = "DOORS"
+
+if isHotel then
+    local inwhere = "酒店-Floor 1"
+elseif isMines then
+    local inwhere = "矿井-Floor 2"
+elseif isBackdoor then
+    local inwhere = "后门-Floor -1"
+elseif isRooms then
+    local inwhere = "The Rooms"
+end
+
 local floorReplicated = if not isFools then ReplicatedStorage:WaitForChild("FloorReplicated") else nil
 local remotesFolder = if not isFools then ReplicatedStorage:WaitForChild("RemotesFolder") else ReplicatedStorage:WaitForChild("EntityInfo")
 
@@ -438,15 +450,6 @@ local Options = getgenv().Linoria.Options
 local Toggles = getgenv().Linoria.Toggles
 
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MS-ESP/refs/heads/main/source.lua"))()
-
-if isHotel then
-    local inwhere = "酒店-Floor 1"
-elseif isMines then
-    local inwhere = "矿井-Floor 2"
-elseif isBackdoor then
-    local inwhere = "后门-Floor -1"
-elseif isRooms then
-    local inwhere = "The Rooms"
 
 local Window = Library:CreateWindow({
     Title = "Mspaint v2 | "..inwhere,
