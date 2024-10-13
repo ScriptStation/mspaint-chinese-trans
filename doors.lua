@@ -920,7 +920,7 @@ do
             local opened = door:GetAttribute("Opened")
             local locked = room:GetAttribute("RequiresKey")
     
-            local doorState = if opened then "[Opened]" elseif locked then "[Locked]" else ""
+            local doorState = if opened then "[打开的]" elseif locked then "[上锁的]" else ""
             local doorIdx = Script.Functions.RandomString()
     
             local doorEsp = Script.Functions.ESP({
