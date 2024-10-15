@@ -1,3 +1,3 @@
 This is NOT an offical script
 Script made by mspaint devs
-Trans by R-EXPLOIT(ScriptStation)
+Warning: Script WILL NOT UPDATE! MSPAINT V3 RELEASED ! Please Use OFFICAL Script!!!!!!!
