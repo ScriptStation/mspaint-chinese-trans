@@ -8578,7 +8578,7 @@ function Script.Functions.ObjectiveESP(child)
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Gate Power Button",
+            Text = "电闸按钮",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "FuseObtain" then
@@ -8702,7 +8702,7 @@ function Script.Functions.GoldESP(gold)
     Script.Functions.ESP({
         Type = "Gold",
         Object = gold,
-        Text = string.format("Gold [%s]", gold:GetAttribute("GoldValue")),
+        Text = string.format("金子 [%s]", gold:GetAttribute("GoldValue")),
         Color = Options.GoldEspColor.Value
     })
 end
@@ -10301,27 +10301,6 @@ function UICreator:CreateSettingsTab()
     SaveManager:SetLibrary(shared.Library)
 
     SaveManager:IgnoreThemeSettings()
-
-	if not isfolder("mspaint/doors/hotel") then
-    	makefolder("mspaint/doors/hotel")
-	elseif not isfolder("mspaint/doors/mines") then
-    	makefolder("mspaint/doors/mines")
-	elseif not isfolder("mspaint/doors/backdoor") then
-    	makefolder("mspaint/doors/backdoor")
-	elseif not isfolder("mspaint/doors/rooms") then
-    	makefolder("mspaint/doors/rooms")
-    end
-	if isHotel then
-    	SaveManager:SetFolder("mspaint/doors/hotel")
-	elseif isMines then
-    	SaveManager:SetFolder("mspaint/doors/mines")
-	elseif isBackdoor then
-    	SaveManager:SetFolder("mspaint/doors/backdoor")
-	elseif isRooms then
-    	SaveManager:SetFolder("mspaint/doors/rooms")
-	end
-
-    SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
 
     SaveManager:LoadAutoloadConfig()
@@ -11844,6 +11823,7 @@ elseif isBackdoor then
 elseif isRooms then
     SaveManager:SetFolder("mspaint/doors/rooms")
 end
+SaveManager:BuildConfigSection(SettingsTab)
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
