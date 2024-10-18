@@ -7,7 +7,7 @@ elseif not isfolder("mspaint/doors/backdoor") then
 elseif not isfolder("mspaint/doors/rooms") then
     makefolder("mspaint/doors/rooms")
 end
-
+print("NEW-DOCUNMENT")
 -- ++++++++ WAX BUNDLED DATA BELOW ++++++++ --
 
 -- Will be used later for getting flattened globals
