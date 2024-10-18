@@ -10301,6 +10301,25 @@ function UICreator:CreateSettingsTab()
     SaveManager:SetLibrary(shared.Library)
 
     SaveManager:IgnoreThemeSettings()
+    if not isfolder("mspaint/doors/hotel") then
+        makefolder("mspaint/doors/hotel")
+    elseif not isfolder("mspaint/doors/mines") then
+        makefolder("mspaint/doors/mines")
+    elseif not isfolder("mspaint/doors/backdoor") then
+        makefolder("mspaint/doors/backdoor")
+    elseif not isfolder("mspaint/doors/rooms") then
+        makefolder("mspaint/doors/rooms")
+    end
+    if isHotel then
+        SaveManager:SetFolder("mspaint/doors/hotel")
+    elseif isMines then
+        SaveManager:SetFolder("mspaint/doors/mines")
+    elseif isBackdoor then
+        SaveManager:SetFolder("mspaint/doors/backdoor")
+    elseif isRooms then
+        SaveManager:SetFolder("mspaint/doors/rooms")
+    end
+    SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
 
     SaveManager:LoadAutoloadConfig()
@@ -11805,25 +11824,7 @@ function ImportGlobals(refId)
     -- Now, return flattened globals ready for direct runtime exec
     return Global_wax, Global_script, Global_require
 end
-if not isfolder("mspaint/doors/hotel") then
-    makefolder("mspaint/doors/hotel")
-elseif not isfolder("mspaint/doors/mines") then
-    makefolder("mspaint/doors/mines")
-elseif not isfolder("mspaint/doors/backdoor") then
-    makefolder("mspaint/doors/backdoor")
-elseif not isfolder("mspaint/doors/rooms") then
-    makefolder("mspaint/doors/rooms")
-end
-if isHotel then
-    SaveManager:SetFolder("mspaint/doors/hotel")
-elseif isMines then
-    SaveManager:SetFolder("mspaint/doors/mines")
-elseif isBackdoor then
-    SaveManager:SetFolder("mspaint/doors/backdoor")
-elseif isRooms then
-    SaveManager:SetFolder("mspaint/doors/rooms")
-end
-SaveManager:BuildConfigSection(SettingsTab)
+
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
