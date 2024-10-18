@@ -10304,16 +10304,16 @@ function UICreator:CreateSettingsTab()
     SaveManager:IgnoreThemeSettings()
 
     if Script.IsHotel then
-        SaveManager:SetFolder("mspaint/doors/hotel")
+        local Siw="hotel"
         print("HotelSdcardSaveConfigureLog")
     elseif Script.IsMines then
-        SaveManager:SetFolder("mspaint/doors/mines")
+        local Siw="mines"
     elseif Script.IsBackdoor then
-        SaveManager:SetFolder("mspaint/doors/backdoor")
+        local Siw="backdoor"
     elseif Script.IsRooms then
-        SaveManager:SetFolder("mspaint/doors/rooms")
+        local Siw="rooms"
     end
-
+    SaveManager:SetFolder("mspaint/doors/"..Siw)
     SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
 
