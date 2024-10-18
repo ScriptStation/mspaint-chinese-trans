@@ -8199,12 +8199,12 @@ function Script.Functions.SetupCharacterConnection(newCharacter)
         for _, oldConnection in pairs(Script.FeatureConnections.Humanoid) do
             oldConnection:Disconnect()
         end
-
+        --[[
         shared.Twerk:Setup()
         if Toggles.Twerk.Value then
             shared.Twerk:Enable()
         end
-
+        ]]--
         Script.FeatureConnections.Humanoid["Move"] = shared.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
             if not Toggles.FastClosetExit then return end
 
