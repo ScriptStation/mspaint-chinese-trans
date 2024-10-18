@@ -10298,26 +10298,14 @@ function UICreator:CreateSettingsTab()
 
     shared.Library.ToggleKeybind = shared.Options.MenuKeybind
 
+	return sfc
+	
     ThemeManager:SetLibrary(shared.Library)
     SaveManager:SetLibrary(shared.Library)
 
     SaveManager:IgnoreThemeSettings()
-
-    if Script.IsHotel then
-        local Siw="hotel"
-        print("HotelSdcardSaveConfigureLog")
-    elseif Script.IsMines then
-        local Siw="mines"
-    elseif Script.IsBackdoor then
-        local Siw="backdoor"
-    elseif Script.IsRooms then
-        local Siw="rooms"
-    end
-    SaveManager:SetFolder("mspaint/doors/"..Siw)
-    SaveManager:BuildConfigSection(SettingsTab)
-    ThemeManager:ApplyToTab(SettingsTab)
-
-    SaveManager:LoadAutoloadConfig()
+	
+    
 
 
     shared.Connect:GiveSignal(shared.LocalPlayer.OnTeleport:Connect(function()
@@ -11823,5 +11811,24 @@ end
 
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
+end
+function Sfc()
+	SaveManager:IgnoreThemeSettings()
+	
+	if Script.IsHotel then
+		local Siw="hotel"
+		print("HotelSdcardSaveConfigureLog")
+	elseif Script.IsMines then
+		local Siw="mines"
+	elseif Script.IsBackdoor then
+		local Siw="backdoor"
+	elseif Script.IsRooms then
+		local Siw="rooms"
+	end
+	SaveManager:SetFolder("mspaint/doors/"..Siw)
+	SaveManager:BuildConfigSection(SettingsTab)
+	ThemeManager:ApplyToTab(SettingsTab)
+	
+	SaveManager:LoadAutoloadConfig()
 end
 print("NEWUPDDEC")
