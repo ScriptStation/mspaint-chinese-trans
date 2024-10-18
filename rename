@@ -1,11 +1,12 @@
---[[
-    This script is NOT intended to be modified.
-    To view the source code, see the 'Src' folder on the official GitHub repository.
-
-    Authors: upio, deivid, mstudio45 & bacalhauz
-    GitHub: https://github.com/notpoiu/mspaint
-    Discord: https://discord.gg/mspaint
---]]
+if not isfolder("mspaint/doors/hotel") then
+    makefolder("mspaint/doors/hotel")
+elseif not isfolder("mspaint/doors/mines") then
+    makefolder("mspaint/doors/mines")
+elseif not isfolder("mspaint/doors/backdoor") then
+    makefolder("mspaint/doors/backdoor")
+elseif not isfolder("mspaint/doors/rooms") then
+    makefolder("mspaint/doors/rooms")
+end
 
 -- ++++++++ WAX BUNDLED DATA BELOW ++++++++ --
 
@@ -10301,15 +10302,7 @@ function UICreator:CreateSettingsTab()
     SaveManager:SetLibrary(shared.Library)
 
     SaveManager:IgnoreThemeSettings()
-    if not isfolder("mspaint/doors/hotel") then
-        makefolder("mspaint/doors/hotel")
-    elseif not isfolder("mspaint/doors/mines") then
-        makefolder("mspaint/doors/mines")
-    elseif not isfolder("mspaint/doors/backdoor") then
-        makefolder("mspaint/doors/backdoor")
-    elseif not isfolder("mspaint/doors/rooms") then
-        makefolder("mspaint/doors/rooms")
-    end
+
     if Script.IsHotel then
         SaveManager:SetFolder("mspaint/doors/hotel")
     elseif Script.IsMines then
@@ -10319,8 +10312,10 @@ function UICreator:CreateSettingsTab()
     elseif Script.IsRooms then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
-    SaveManager:BuildConfigSection(SettingsTab)
+
     ThemeManager:ApplyToTab(SettingsTab)
+    SaveManager:BuildConfigSection(SettingsTab)
+    
 
     SaveManager:LoadAutoloadConfig()
 
@@ -11828,3 +11823,4 @@ end
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
+print("NEWUPDDEC")
