@@ -7,7 +7,7 @@ elseif not isfolder("mspaint/doors/backdoor") then
 elseif not isfolder("mspaint/doors/rooms") then
     makefolder("mspaint/doors/rooms")
 end
-print("NEW-DOCUNMENT")
+
 -- ++++++++ WAX BUNDLED DATA BELOW ++++++++ --
 
 -- Will be used later for getting flattened globals
@@ -10305,6 +10305,7 @@ function UICreator:CreateSettingsTab()
 
     if Script.IsHotel then
         SaveManager:SetFolder("mspaint/doors/hotel")
+        print("HotelSdcardSaveConfigureLog")
     elseif Script.IsMines then
         SaveManager:SetFolder("mspaint/doors/mines")
     elseif Script.IsBackdoor then
@@ -10313,11 +10314,11 @@ function UICreator:CreateSettingsTab()
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
 
-    ThemeManager:ApplyToTab(SettingsTab)
     SaveManager:BuildConfigSection(SettingsTab)
-    
+    ThemeManager:ApplyToTab(SettingsTab)
 
     SaveManager:LoadAutoloadConfig()
+
 
     shared.Connect:GiveSignal(shared.LocalPlayer.OnTeleport:Connect(function()
         if not shared.Toggles.ExecuteOnTeleport.Value or getgenv().queued_to_teleport then return end
