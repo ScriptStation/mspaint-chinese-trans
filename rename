@@ -11689,14 +11689,14 @@ local function LoadScript(scriptRef)
     if ScriptClassName == "LocalScript" or ScriptClassName == "Script" then
         local RunSuccess, ErrorMessage = pcall(Closure)
         if not RunSuccess then
-            print(1)
+            error(FormatError(ErrorMessage or errorMessage))
         end
     else
         local PCallReturn = {pcall(Closure)}
 
         local RunSuccess = table_remove(PCallReturn, 1)
         if not RunSuccess then
-            print(1)
+            error(FormatError(ErrorMessage or errorMessage))
         end
 
         StoredModuleValues[scriptRef] = PCallReturn
