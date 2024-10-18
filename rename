@@ -9157,7 +9157,23 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:IgnoreThemeSettings()
 
-    SaveManager:SetFolder("mspaint/" .. string.lower(shared.ScriptLoader))
+    if not isfolder("mspaint/doors/hotel") then
+        makefolder("mspaint/doors/hotel")
+    elseif not isfolder("mspaint/doors/mines") then
+        makefolder("mspaint/doors/mines")
+    elseif not isfolder("mspaint/doors/backdoor") then
+        makefolder("mspaint/doors/backdoor")
+    elseif not isfolder("mspaint/doors/rooms") then
+        makefolder("mspaint/doors/rooms")
+    elseif isHotel then
+        SaveManager:SetFolder("mspaint/doors/hotel")
+    elseif isMines then
+        SaveManager:SetFolder("mspaint/doors/mines")
+    elseif isBackdoor then
+        SaveManager:SetFolder("mspaint/doors/backdoor")
+    elseif isRooms then
+        SaveManager:SetFolder("mspaint/doors/rooms")
+    end
 
     SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
@@ -9168,7 +9184,7 @@ function UICreator:CreateSettingsTab()
         if not shared.Toggles.ExecuteOnTeleport.Value or getgenv().queued_to_teleport then return end
 
         getgenv().queued_to_teleport = true
-        queue_on_teleport([[ loadstring(game:HttpGet("https://github.com/notpoiu/mspaint/releases/latest/download/Script.luau"))() ]])
+        queue_on_teleport([[ loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/mspaint-chinese-trans/refs/heads/main/rename"))() ]])
     end))
 
     return SettingsTab
