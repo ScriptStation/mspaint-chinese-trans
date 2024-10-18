@@ -1067,10 +1067,10 @@ shared.Load("Utils", "ConnectionsFuncs")
 
 --// Tabs \\--
 Script.Tabs = {
-    Main = shared.Window:AddTab("Main"),
-    Exploits = shared.Window:AddTab("Exploits"),
-    Visuals = shared.Window:AddTab("Visuals"),
-    Floor = shared.Window:AddTab("Floor")
+    Main = shared.Window:AddTab("主要"),
+    Exploits = shared.Window:AddTab("漏洞"),
+    Visuals = shared.Window:AddTab("虚拟"),
+    Floor = shared.Window:AddTab("楼层")
 }
 
 shared.Load("Tabs", "Main")
@@ -1192,7 +1192,7 @@ shared.Connect:GiveSignal(workspace.ChildAdded:Connect(function(child)
                         shared.Notify:Alert({
                             Title = "ENTITIES",
                             Description = string.format("%s %s", shortName, Options.NotifyEntityMessage.Value),
-                            Reason = (not Script.EntityTable.NotifyReason[child.Name].Spawned and "Go find a hiding place!" or nil),
+                            Reason = (not Script.EntityTable.NotifyReason[child.Name].Spawned and "去找一个多藏点!" or nil),
                             Image = Script.EntityTable.NotifyReason[child.Name].Image,
 
                             Warning = true
@@ -1208,7 +1208,7 @@ shared.Connect:GiveSignal(workspace.ChildAdded:Connect(function(child)
             shared.Notify:Alert({
                 Title = "ENTITIES",
                 Description = string.format("%s %s", shortName, Options.NotifyEntityMessage.Value),
-                Reason = (not Script.EntityTable.NotifyReason[child.Name].Spawned and "Go find a hiding place!" or nil),
+                Reason = (not Script.EntityTable.NotifyReason[child.Name].Spawned and "去找一个多藏点!" or nil),
                 Image = Script.EntityTable.NotifyReason[child.Name].Image,
 
                 Warning = true
@@ -10310,13 +10310,13 @@ function UICreator:CreateSettingsTab()
     elseif not isfolder("mspaint/doors/rooms") then
         makefolder("mspaint/doors/rooms")
     end
-    if isHotel then
+    if Script.isHotel then
         SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif isMines then
+    elseif Script.isMines then
         SaveManager:SetFolder("mspaint/doors/mines")
-    elseif isBackdoor then
+    elseif Script.isBackdoor then
         SaveManager:SetFolder("mspaint/doors/backdoor")
-    elseif isRooms then
+    elseif Script.isRooms then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
     SaveManager:BuildConfigSection(SettingsTab)
