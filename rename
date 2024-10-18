@@ -11673,6 +11673,24 @@ local function LoadScript(scriptRef)
 
         return VirtualFullName .. ":" .. RealErrorLine .. ": " .. BaseErrorMessage
     end
+
+    -- If it's a BaseScript, we'll just run it directly!
+    if ScriptClassName == "LocalScript" or ScriptClassName == "Script" then
+        local RunSuccess, ErrorMessage = pcall(Closure)
+        if not RunSuccess then
+            print(1)
+        end
+    else
+        local PCallReturn = {pcall(Closure)}
+
+        local RunSuccess = table_remove(PCallReturn, 1)
+        if not RunSuccess then
+            print(1)
+        end
+
+        StoredModuleValues[scriptRef] = PCallReturn
+        return unpack(PCallReturn)
+    end
 end
 
 -- We'll assign the actual func from the top of this output for flattening user globals at runtime
