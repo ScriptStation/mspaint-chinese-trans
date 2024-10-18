@@ -10310,7 +10310,8 @@ function UICreator:CreateSettingsTab()
     	makefolder("mspaint/doors/backdoor")
 	elseif not isfolder("mspaint/doors/rooms") then
     	makefolder("mspaint/doors/rooms")
-	elseif isHotel then
+    end
+	if isHotel then
     	SaveManager:SetFolder("mspaint/doors/hotel")
 	elseif isMines then
     	SaveManager:SetFolder("mspaint/doors/mines")
