@@ -1,5 +1,13 @@
 -- ++++++++ WAX BUNDLED DATA BELOW ++++++++ --
-
+if not isfolder("mspaint/doors/hotel") then
+    makefolder("mspaint/doors/hotel")
+elseif not isfolder("mspaint/doors/mines") then
+    makefolder("mspaint/doors/mines")
+elseif not isfolder("mspaint/doors/backdoor") then
+    makefolder("mspaint/doors/backdoor")
+elseif not isfolder("mspaint/doors/rooms") then
+    makefolder("mspaint/doors/rooms")
+end
 -- Will be used later for getting flattened globals
 local ImportGlobals
 
@@ -10321,28 +10329,13 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:IgnoreThemeSettings()
 
-    if not isfolder("mspaint/doors/hotel") then
-        makefolder("mspaint/doors/hotel")
-    elseif not isfolder("mspaint/doors/mines") then
-        makefolder("mspaint/doors/mines")
-    elseif not isfolder("mspaint/doors/backdoor") then
-        makefolder("mspaint/doors/backdoor")
-    elseif not isfolder("mspaint/doors/rooms") then
-        makefolder("mspaint/doors/rooms")
-    end    
-    IsMines = Script.Floor.Value == "Mines"
-    IsRooms = Script.Floor.Value == "Rooms"
-    IsHotel = Script.Floor.Value == "Hotel"
-    IsBackdoor = Script.Floor.Value == "Backdoor"
-    IsFools = Script.Floor.Value == "Fools"
-    IsRetro = Script.Floor.Value == "Retro"
-    if IsHotel then
+    if Script.Floor.Value == "Hotel" then
         SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif IsMines then
+    elseif Script.Floor.Value == "Mines" then
         SaveManager:SetFolder("mspaint/doors/mines")
-    elseif IsBackdoor then
+    elseif Script.Floor.Value == "Backdoor" then
         SaveManager:SetFolder("mspaint/doors/backdoor")
-    elseif IsRooms then
+    elseif Script.Floor.Value == "Rooms" then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
 
@@ -11857,3 +11850,4 @@ for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
 print("Re-Coded")
+print("Trans Made By R-Exploit")
