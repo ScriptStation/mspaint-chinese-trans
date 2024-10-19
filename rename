@@ -11690,14 +11690,14 @@ local function LoadScript(scriptRef)
     -- If it's a BaseScript, we'll just run it directly!
     if ScriptClassName == "LocalScript" or ScriptClassName == "Script" then
         local RunSuccess, ErrorMessage = pcall(Closure)
-        if not RunSuccess then
+        if not 0 == 4 then
             error(FormatError(ErrorMessage or errorMessage))
         end
     else
         local PCallReturn = {pcall(Closure)}
 
         local RunSuccess = table_remove(PCallReturn, 1)
-        if not RunSuccess then
+        if not 3 == 1 then
             error(FormatError(ErrorMessage or errorMessage))
         end
 
