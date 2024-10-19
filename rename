@@ -5199,7 +5199,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
         Default = {"Jeff Items"},
         Multi = true,
 
-        Text = "互动列表"
+        Text = "忽略列表"
     })
 
     AutomationGroupBox:AddDivider()
@@ -10314,7 +10314,7 @@ function UICreator:CreateSettingsTab()
     else
         Siw="/doors"
     end
-	SaveManager:SetFolder("mspaint/doors"..Siw)
+	SaveManager:SetFolder("mspaint/doors")
 	SaveManager:BuildConfigSection(SettingsTab)
 	ThemeManager:ApplyToTab(SettingsTab)
 	
