@@ -608,11 +608,11 @@ Script.SuffixPrefixes = {
     ["Ragdoll"] = "",
     ["Rig"] = "",
     ["Wall"] = "",
-    ["Clock"] = " Clock",
-    ["Key"] = " Key",
-    ["Pack"] = " Pack",
-    ["Pointer"] = " Pointer",
-    ["Swarm"] = " Swarm",
+    ["Clock"] = "(警戒钟表)",
+    ["Key"] = "钥匙",
+    ["Pack"] = "包",
+    ["Pointer"] = "(激光笔)",
+    ["Swarm"] = "群",
 }
 
 Script.PrettyFloorName = {
@@ -734,13 +734,13 @@ Script.EntityTable = {
 }
 
 Script.HidingPlaceName = {
-    ["Hotel"] = "Closet",
-    ["Backdoor"] = "Closet",
-    ["Fools"] = "Closet",
-    ["Retro"] = "Closet",
+    ["Hotel"] = "柜子",
+    ["Backdoor"] = "柜子",
+    ["Fools"] = "柜子",
+    ["Retro"] = "柜子",
 
-    ["Rooms"] = "Locker",
-    ["Mines"] = "Locker"
+    ["Rooms"] = "柜子",
+    ["Mines"] = "柜子"
 }
 
 Script.CutsceneExclude = {
@@ -5290,6 +5290,16 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
             Default = false
         })
     end
+    if Script.IsHotel then
+		local Siw="hotel"
+		print("HotelSdcardSaveConfigureLog")
+	elseif Script.IsMines then
+		local Siw="mines"
+	elseif Script.IsBackdoor then
+		local Siw="backdoor"
+	elseif Script.IsRooms then
+		local Siw="rooms"
+	end
 end
 
 local MiscGroupBox = Tabs.Main:AddRightGroupbox("杂项") do
@@ -10295,14 +10305,18 @@ function UICreator:CreateSettingsTab()
     CreditsGroup:AddLabel("deividcomsono - main script dev")
     CreditsGroup:AddLabel("mstudio45")
     CreditsGroup:AddLabel("bacalhauz")
-
+    CreditsGroup:AddLabel("R-Exploit&NIDO_Munciseek")
     shared.Library.ToggleKeybind = shared.Options.MenuKeybind
-
-	return sfc
 	
     ThemeManager:SetLibrary(shared.Library)
     SaveManager:SetLibrary(shared.Library)
-
+	SaveManager:IgnoreThemeSettings()
+	
+	SaveManager:SetFolder("mspaint/doors/"..Siw)
+	SaveManager:BuildConfigSection(SettingsTab)
+	ThemeManager:ApplyToTab(SettingsTab)
+	
+	SaveManager:LoadAutoloadConfig()
     SaveManager:IgnoreThemeSettings()
 	
     
@@ -11812,23 +11826,4 @@ end
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
-function Sfc()
-	SaveManager:IgnoreThemeSettings()
-	
-	if Script.IsHotel then
-		local Siw="hotel"
-		print("HotelSdcardSaveConfigureLog")
-	elseif Script.IsMines then
-		local Siw="mines"
-	elseif Script.IsBackdoor then
-		local Siw="backdoor"
-	elseif Script.IsRooms then
-		local Siw="rooms"
-	end
-	SaveManager:SetFolder("mspaint/doors/"..Siw)
-	SaveManager:BuildConfigSection(SettingsTab)
-	ThemeManager:ApplyToTab(SettingsTab)
-	
-	SaveManager:LoadAutoloadConfig()
-end
-print("NEWUPDDEC")
+print("etc")
