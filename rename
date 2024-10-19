@@ -5291,14 +5291,15 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
         })
     end
     if Script.IsHotel then
-		local Siw="hotel"
+		global Siw="hotel"
 		print("HotelSdcardSaveConfigureLog")
+        SaveManager:SetFolder("mspaint/doors/"..Siw)
 	elseif Script.IsMines then
-		local Siw="mines"
+		global Siw="mines"
 	elseif Script.IsBackdoor then
-		local Siw="backdoor"
+		global Siw="backdoor"
 	elseif Script.IsRooms then
-		local Siw="rooms"
+		global Siw="rooms"
 	end
 end
 
@@ -10305,8 +10306,10 @@ function UICreator:CreateSettingsTab()
     CreditsGroup:AddLabel("deividcomsono - main script dev")
     CreditsGroup:AddLabel("mstudio45")
     CreditsGroup:AddLabel("bacalhauz")
-    CreditsGroup:AddLabel("R-Exploit&NIDO_Munciseek")
+
     shared.Library.ToggleKeybind = shared.Options.MenuKeybind
+
+	return sfc
 	
     ThemeManager:SetLibrary(shared.Library)
     SaveManager:SetLibrary(shared.Library)
@@ -11690,14 +11693,14 @@ local function LoadScript(scriptRef)
     -- If it's a BaseScript, we'll just run it directly!
     if ScriptClassName == "LocalScript" or ScriptClassName == "Script" then
         local RunSuccess, ErrorMessage = pcall(Closure)
-        if not 0 == 4 then
+        if not RunSuccess then
             error(FormatError(ErrorMessage or errorMessage))
         end
     else
         local PCallReturn = {pcall(Closure)}
 
         local RunSuccess = table_remove(PCallReturn, 1)
-        if not 3 == 1 then
+        if not RunSuccess then
             error(FormatError(ErrorMessage or errorMessage))
         end
 
@@ -11784,7 +11787,7 @@ function ImportGlobals(refId)
                 local RealIndex = PathMatch
                 if PathMatch == ".." then
                     RealIndex = "Parent"
-                end
+               end
 
                 -- Don't advance dir if it's just another "/" either
                 if RealIndex ~= "" then
