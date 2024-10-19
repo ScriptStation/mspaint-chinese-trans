@@ -10330,14 +10330,19 @@ function UICreator:CreateSettingsTab()
     elseif not isfolder("mspaint/doors/rooms") then
         makefolder("mspaint/doors/rooms")
     end    
-
-    if Script.IsHotel then
+    IsMines = Script.Floor.Value == "Mines"
+    IsRooms = Script.Floor.Value == "Rooms"
+    IsHotel = Script.Floor.Value == "Hotel"
+    IsBackdoor = Script.Floor.Value == "Backdoor"
+    IsFools = Script.Floor.Value == "Fools"
+    IsRetro = Script.Floor.Value == "Retro"
+    if IsHotel then
         SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif Scipt.IsMines then
+    elseif IsMines then
         SaveManager:SetFolder("mspaint/doors/mines")
-    elseif Script.IsBackdoor then
+    elseif IsBackdoor then
         SaveManager:SetFolder("mspaint/doors/backdoor")
-    elseif Script.IsRooms then
+    elseif IsRooms then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
 
