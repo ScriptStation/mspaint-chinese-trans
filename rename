@@ -10329,16 +10329,16 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:IgnoreThemeSettings()
 
-    if Script.Floor.Value == "Hotel" then
+    if game:GetService("ReplicatedStorage").GameData.Floor.Value == "Hotel" then
         SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif Script.Floor.Value == "Mines" then
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Mines" then
         SaveManager:SetFolder("mspaint/doors/mines")
-    elseif Script.Floor.Value == "Backdoor" then
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Backdoor" then
         SaveManager:SetFolder("mspaint/doors/backdoor")
-    elseif Script.Floor.Value == "Rooms" then
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Rooms" then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
-
+    
     SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
 
@@ -11850,4 +11850,3 @@ for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
 print("Re-Coded")
-print("Trans Made By R-Exploit")
