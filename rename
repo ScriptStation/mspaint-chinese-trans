@@ -1,12 +1,3 @@
---[[
-    This script is NOT intended to be modified.
-    To view the source code, see the 'Src' folder on the official GitHub repository.
-
-    Authors: upio, deivid, mstudio45 & bacalhauz
-    GitHub: https://github.com/notpoiu/mspaint
-    Discord: https://discord.gg/mspaint
---]]
-
 -- ++++++++ WAX BUNDLED DATA BELOW ++++++++ --
 
 -- Will be used later for getting flattened globals
@@ -168,7 +159,375 @@ end)() end,
     }
 }
 end)() end,
-    [6] = function()local wax,script,require=ImportGlobals(6)local ImportGlobals return (function(...)--// Loading Wait \\--
+    [6] = function()local wax,script,require=ImportGlobals(6)local ImportGlobals return (function(...)--// Linoria \\--
+local Toggles = shared.Toggles
+local Options = shared.Options
+
+--// Variables \\--
+local Script = shared.Script
+
+Script.DidGodmode = false
+
+Script.DefaultFogEnd = shared.Lighting.FogEnd
+
+Script.CurrentAmbient = shared.Lighting.Ambient
+Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
+Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
+if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+    Script.CurrentFoggyDayDensity = shared.Lighting["FoggyDay_Atmosphere"].Density
+end
+
+Script.Physical = workspace:WaitForChild("GameObjects"):WaitForChild("Physical")
+Script.Map = Script.Physical:WaitForChild("Map")
+Script.Items = Script.Physical:WaitForChild("Items")
+Script.Employees = Script.Physical:WaitForChild("Employees")
+
+Script.FeatureConnections = {
+    Item = {},
+    Employee = {},
+    Player = {},
+    ESPTemp = {}
+}
+
+Script.ESPTable = {
+    Item = {},
+    Employee = {},
+    Player = {}
+}
+
+Script.InteractableItems = {
+	"Medkit",
+	"Pizza",
+	"Beans",
+	"Meatballs",
+	"Apple",
+	"Lemon",
+	"Lemon Slice",
+	"Burger",
+	"Banana",
+	"Hotdog",
+	"Striped Donut",
+	"Chips",
+	"Ice Cream",
+	"Chocolate",
+	"Cookie",
+	"Bloxy Soda",
+	"2 Litre Dr. Bob",
+    "Dr. Bob Soda",
+	"Water",
+	"Jeff"
+}
+--// Player Variables \\--
+shared.Character = shared.LocalPlayer.Character or shared.LocalPlayer.CharacterAdded:Wait()
+shared.Humanoid = nil
+
+Script.System = shared.Character:WaitForChild("System")
+Script.Event = Script.System:WaitForChild("Event")
+Script.Action = Script.System:WaitForChild("Action")
+
+Script.DeathScreen = shared.PlayerGui:WaitForChild("DeathScreen")
+Script.Settings = shared.PlayerGui:WaitForChild("PlayerInfo"):WaitForChild("Settings")
+Script.MainGui = shared.PlayerGui:WaitForChild("MainGui")
+Script.PlayerStats = Script.MainGui:WaitForChild("PlayerStats")
+
+Script.TopBar = Script.MainGui:WaitForChild("TopBar")
+Script.Calendar = Script.TopBar:WaitForChild("Calendar")
+Script.CurrentDay = Script.Calendar:WaitForChild("Middle"):WaitForChild("CurrentDay")
+Script.TimeLeft = shared.ReplicatedStorage:WaitForChild("ServerSettings"):WaitForChild("TimeSettings"):WaitForChild("TimeLeft")
+
+Script.Source = shared.PlayerScripts:WaitForChild("source")
+Script.Client = Script.Source:WaitForChild("client")
+
+Script.ToolSystem = Script.Client:WaitForChild("ToolSystem")
+Script.WaypointsMenu = Script.Client:WaitForChild("GUI"):WaitForChild("GuiMenus"):WaitForChild("Extras"):WaitForChild("WaypointsMenu")
+
+Script.GamePassClockVisible = Script.Calendar:WaitForChild("Gamepass_Clock").Visible
+
+--// Functions \\--
+Script._mspaint_custom_captions = Instance.new("ScreenGui") do
+    local Frame = Instance.new("Frame", Script._mspaint_custom_captions)
+    local TextLabel = Instance.new("TextLabel", Frame)
+    local UITextSizeConstraint = Instance.new("UITextSizeConstraint", TextLabel)
+
+    Script._mspaint_custom_captions.Parent = shared.ReplicatedStorage
+    Script._mspaint_custom_captions.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.BackgroundColor3 = shared.Library.MainColor
+    Frame.BorderColor3 = shared.Library.AccentColor
+    Frame.BorderSizePixel = 2
+    Frame.Position = UDim2.new(0.5, 0, 0.8, 0)
+    Frame.Size = UDim2.new(0, 200, 0, 75)
+    shared.Library:AddToRegistry(Frame, {
+        BackgroundColor3 = "MainColor",
+        BorderColor3 = "AccentColor"
+    })
+
+    TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.BackgroundTransparency = 1.000
+    TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    TextLabel.BorderSizePixel = 0
+    TextLabel.Size = UDim2.new(1, 0, 1, 0)
+    TextLabel.Font = Enum.Font.Code
+    TextLabel.Text = ""
+    TextLabel.TextColor3 = shared.Library.FontColor
+    TextLabel.TextScaled = true
+    TextLabel.TextSize = 14
+    TextLabel.TextWrapped = true
+    shared.Library:AddToRegistry(TextLabel, {
+        TextColor3 = "FontColor"
+    })
+
+    UITextSizeConstraint.MaxTextSize = 35
+
+    function Script.Functions.HideCaptions()
+        Script._mspaint_custom_captions.Parent = shared.ReplicatedStorage
+    end
+
+    local CaptionsLastUsed = os.time()
+    function Script.Functions.Captions(caption: string)
+        CaptionsLastUsed = os.time()
+
+        if Script._mspaint_custom_captions.Parent == shared.ReplicatedStorage then
+            local success = pcall(function()
+                Script._mspaint_custom_captions.Parent = if gethui then gethui() else shared.CoreGui
+            end)
+
+            if not success then
+                Script._mspaint_custom_captions.Parent = shared.PlayerGui
+            end 
+        end
+        
+        TextLabel.Text = caption
+
+        task.spawn(function()
+            task.wait(5)
+            if os.time() - CaptionsLastUsed >= 5 then
+                Script.Functions.HideCaptions()
+            end
+        end)
+    end
+end
+
+function Script.Functions.DistanceFromCharacter(position: Instance | Vector3, getPositionFromCamera: boolean | nil)
+    if not position then return 9e9 end
+    if typeof(position) == "Instance" then
+        position = position:GetPivot().Position
+    end
+
+    if getPositionFromCamera and (shared.Camera or workspace.CurrentCamera) then
+        local cameraPosition = if shared.Camera then shared.Camera.CFrame.Position else workspace.CurrentCamera.CFrame.Position
+
+        return (cameraPosition - position).Magnitude
+    end
+
+    if shared.RootPart then
+        return (shared.RootPart.Position - position).Magnitude
+    elseif shared.Camera then
+        return (shared.Camera.CFrame.Position - position).Magnitude
+    end
+
+    return 9e9
+end
+
+function Script.Functions.CameraChildAdded(child)
+    if Toggles.AutoTPWhistle.Value then
+        for playerName, _ in pairs(Options.AutoTPWhistlePlayers.Value) do
+            if child.Name == playerName .. "_EchoLocation" then
+                shared.Character:PivotTo(child.CFrame)
+            end
+        end
+    end
+end
+
+function Script.Functions.IsNaN(x)
+    return x ~= x
+end
+
+function Script.Functions.UpdateBloxstrapRPC()
+    if not wax.shared.BloxstrapRPC then return end
+    
+    wax.shared.BloxstrapRPC.SetRichPresence({
+        details = "Playing 3008 [ mspaint v3 ]",
+        state = string.lower(Script.CurrentDay.Text):gsub("^%l", string.upper),
+        largeImage = {
+            hoverText = "Using mspaint v3"
+        },
+        smallImage = {
+            assetId = 6925817108,
+            hoverText = shared.LocalPlayer.Name
+        }
+    })
+end
+
+function Script.Functions.Respawn()
+    if shared.Humanoid.Health > 0 or Script.Functions.IsNaN(shared.Humanoid.Health) then
+        shared.Character:BreakJoints()
+    end
+
+    repeat task.wait(0.1) until Script.DeathScreen.BG.Visible
+    
+    Script.Event:FireServer("Respawn")
+
+    Script.DeathScreen.DeathSound:Stop()
+    Script.DeathScreen.DeathMusic:Stop()
+end
+
+shared.Load("Utils", "ConnectionsFuncs")
+shared.Load("Utils", "ESP")
+
+--// Tabs \\--
+Script.Tabs = {
+    Main = shared.Window:AddTab("Main"),
+    Exploits = shared.Window:AddTab("Exploits"),
+    Visuals = shared.Window:AddTab("Visuals"),
+}
+
+shared.Load("Tabs", "Main")
+shared.Load("Tabs", "Exploits")
+shared.Load("Tabs", "Visuals")
+--// Metamethod hooks \\--
+if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
+    if wax.shared.ExecutorSupport["require"] then
+        Script.ToolGStep = wax.require(Script.ToolSystem).GlobalRenderStep
+    end
+
+    shared.Hooks.mtHook = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+
+        local isAction = method == "InvokeServer" and self.Name == "Action"
+
+        if isAction then
+            local actionType = args[1]
+            local actionData = args[2]
+
+            if actionType == "Store" and args[3] ~= "_internal_origin_mspaint" then
+                if Toggles.InfiniteInventory.Value and wax.shared.ExecutorSupport["require"] then
+                    require(Script.ToolSystem).GlobalRenderStep = function() end
+                    local parentedTools = {}
+                    
+                    for _, tool in pairs(shared.LocalPlayer.Backpack:GetChildren()) do
+                        table.insert(parentedTools, tool)
+                    
+                        shared.Humanoid:EquipTool(tool)
+                        tool.Parent = workspace
+                    end
+    
+                    task.wait()
+                    local modelName = actionData.Model.Name
+    
+                    Script.Action:InvokeServer("Store", actionData, "_internal_origin_mspaint")
+                    
+                    local newTool = shared.LocalPlayer.Backpack:WaitForChild(modelName)
+    
+                    shared.Humanoid:EquipTool(newTool)
+    
+                    for _, tool in pairs(parentedTools)  do
+                        tool.Parent = shared.Character
+                        shared.Humanoid:EquipTool(tool)
+                    end
+                    
+                    shared.Humanoid:UnequipTools()
+    
+                    require(Script.ToolSystem).GlobalRenderStep = Script.ToolGStep
+
+                    return
+                end
+            end
+    
+            if actionType == "Drop" then
+                if Toggles.ThrowPowerBoost.Value then
+                    actionData.ThrowPower = Options.ThrowPower.Value
+                    actionData.Throw = true
+                    actionData.CameraCFrame = actionData.CameraCFrame * Options.ThrowPower.Value
+                end
+
+                if Toggles.DeleteObject.Value then
+                    actionData.ThrowPower = 555
+                    actionData.Throw = true
+                    actionData.CameraCFrame = actionData.CameraCFrame * -1000
+                end
+            end
+
+            return shared.Hooks.mtHook(self, table.unpack({
+                actionType,
+                actionData
+            }))
+        end
+
+        return shared.Hooks.mtHook(self, ...)
+    end))
+end
+
+--// Function hooks \\--
+if wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"] then
+    shared.Hooks.instantInteract = hookfunction(TweenInfo.new, newcclosure(function(self, ...)
+        if not shared.Library.Unloaded then
+            if Toggles.InstantInteract.Value then
+                local caller = getcallingscript()
+    
+                local isInputController = caller and caller.Name == "InputControl"
+                local isValidArgument = self and typeof(self) == "number"
+    
+                if isInputController and isValidArgument then
+                    self = 0
+                end
+            end
+        end
+
+        return shared.Hooks.instantInteract(self, ...)
+    end))
+end
+
+--// Connections \\--
+shared.Connect:GiveSignal(shared.LocalPlayer.CharacterAdded:Connect(function(newCharacter)
+    task.delay(1, Script.Functions.SetupCharacterConnection, newCharacter)
+end))
+
+shared.Connect:GiveSignal(shared.Camera.ChildAdded:Connect(Script.Functions.CameraChildAdded))
+
+shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(function(player)
+    task.spawn(Script.Functions.SetupOtherPlayerConnection, player)
+end))
+
+--// Load \\--
+task.spawn(Script.Functions.SetupCharacterConnection, shared.Character)
+task.spawn(Script.Functions.SetupLightingConnection)
+task.spawn(Script.Functions.SetupExploitInfModulesConnection)
+task.spawn(Script.Functions.SetupBloxstrapRPCConnection)
+
+task.spawn(Script.Functions.SetupEmployeeConnection)
+task.spawn(Script.Functions.SetupItemConnection)
+task.spawn(Script.Functions.SetupOtherPlayerConnection)
+
+for _, child in pairs(shared.Camera:GetChildren()) do
+    Script.Functions.CameraChildAdded(child)
+end
+
+--// Unload \\--
+shared.Library:OnUnload(function()
+    if wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"] then
+        hookmetamethod(game, "__namecall", shared.Hooks.mtHook)
+    end
+
+    if wax.shared.BloxstrapRPC then
+        wax.shared.BloxstrapRPC.SetRichPresence({
+            details = "<reset>",
+            state = "<reset>",
+            largeImage = {
+                reset = true
+            },
+            smallImage = {
+                reset = true
+            }
+        })
+    end
+end)
+
+getgenv().mspaint_loaded = true
+end)() end,
+    [8] = function()local wax,script,require=ImportGlobals(8)local ImportGlobals return (function(...)--// Loading Wait \\--
 if shared.LocalPlayer and shared.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and shared.LocalPlayer.PlayerGui.LoadingUI.Enabled then
     print("[mspaint] Waiting for game to load...")
     repeat task.wait() until not shared.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and true or not shared.LocalPlayer.PlayerGui.LoadingUI.Enabled
@@ -239,11 +598,11 @@ Script.SuffixPrefixes = {
     ["Ragdoll"] = "",
     ["Rig"] = "",
     ["Wall"] = "",
-    ["Clock"] = " Clock",
-    ["Key"] = " Key",
-    ["Pack"] = " Pack",
-    ["Pointer"] = " Pointer",
-    ["Swarm"] = " Swarm",
+    ["Clock"] = "警戒表",
+    ["Key"] = "钥匙",
+    ["Pack"] = "包",
+    ["Pointer"] = "(激光笔)",
+    ["Swarm"] = "群",
 }
 
 Script.PrettyFloorName = {
@@ -365,13 +724,13 @@ Script.EntityTable = {
 }
 
 Script.HidingPlaceName = {
-    ["Hotel"] = "Closet",
-    ["Backdoor"] = "Closet",
-    ["Fools"] = "Closet",
-    ["Retro"] = "Closet",
+    ["Hotel"] = "柜子",
+    ["Backdoor"] = "柜子",
+    ["Fools"] = "柜子",
+    ["Retro"] = "柜子",
 
-    ["Rooms"] = "Locker",
-    ["Mines"] = "Locker"
+    ["Rooms"] = "柜子",
+    ["Mines"] = "柜子"
 }
 
 Script.CutsceneExclude = {
@@ -1757,7 +2116,7 @@ end)
 
 getgenv().mspaint_loaded = true
 end)() end,
-    [7] = function()local wax,script,require=ImportGlobals(7)local ImportGlobals return (function(...)--// Loading Wait \\--
+    [9] = function()local wax,script,require=ImportGlobals(9)local ImportGlobals return (function(...)--// Loading Wait \\--
 if shared.LocalPlayer.PlayerGui:FindFirstChild("LoadingUI") and shared.LocalPlayer.PlayerGui.LoadingUI.Enabled then
     repeat task.wait() until not shared.LocalPlayer.PlayerGui.LoadingUI.Enabled
 end
@@ -1929,7 +2288,7 @@ end))
 
 getgenv().mspaint_loaded = true
 end)() end,
-    [8] = function()local wax,script,require=ImportGlobals(8)local ImportGlobals return (function(...)--// Linoria \\--
+    [10] = function()local wax,script,require=ImportGlobals(10)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -2032,7 +2391,7 @@ end)
 
 getgenv().mspaint_loaded = true
 end)() end,
-    [9] = function()local wax,script,require=ImportGlobals(9)local ImportGlobals return (function(...)--// Linoria \\--
+    [11] = function()local wax,script,require=ImportGlobals(11)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -2207,7 +2566,7 @@ end)
 
 getgenv().mspaint_loaded = true
 end)() end,
-    [12] = function()local wax,script,require=ImportGlobals(12)local ImportGlobals return (function(...)--// Linoria \\--
+    [14] = function()local wax,script,require=ImportGlobals(14)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -2375,7 +2734,7 @@ Toggles.Twerk:OnChanged(function(value)
     shared.Twerk:Set(value)
 end)
 end)() end,
-    [13] = function()local wax,script,require=ImportGlobals(13)local ImportGlobals return (function(...)--// Linoria \\--
+    [15] = function()local wax,script,require=ImportGlobals(15)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -2611,7 +2970,7 @@ Toggles.AutoPush:OnChanged(function(value)
     end
 end)
 end)() end,
-    [14] = function()local wax,script,require=ImportGlobals(14)local ImportGlobals return (function(...)--// Linoria \\--
+    [16] = function()local wax,script,require=ImportGlobals(16)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -2932,7 +3291,7 @@ Options.MaxWaypoints:OnChanged(function(value)
     end
 end)
 end)() end,
-    [17] = function()local wax,script,require=ImportGlobals(17)local ImportGlobals return (function(...)--// Linoria \\--
+    [19] = function()local wax,script,require=ImportGlobals(19)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -2943,22 +3302,22 @@ local Tabs = Script.Tabs
 --// Exploits \\--
 local AntiEntityGroupBox = Tabs.Exploits:AddLeftGroupbox("反实体") do
     AntiEntityGroupBox:AddToggle("AntiDread", {
-        Text = "反恐惧",
+        Text = "反dread",
         Default = false
     })
 
     AntiEntityGroupBox:AddToggle("AntiHalt", {
-        Text = "反halt",
+        Text = "反Halt",
         Default = false
     })
 
     AntiEntityGroupBox:AddToggle("AntiScreech", {
-        Text = "反黑子(Screech",
+        Text = "反Screech",
         Default = false
     })
 
     AntiEntityGroupBox:AddToggle("AntiDupe", {
-        Text = "反" .. (Script.IsBackdoor and "真空" or "假门"),
+        Text = "反" .. (Script.IsBackdoor and "Vacuum" or "Dupe"),
         Default = false
     })
 
@@ -2968,18 +3327,18 @@ local AntiEntityGroupBox = Tabs.Exploits:AddLeftGroupbox("反实体") do
     })
 
     AntiEntityGroupBox:AddToggle("AntiSnare", {
-        Text = "反地刺",
+        Text = "反捕兽夹",
         Default = false
     })
 
     AntiEntityGroupBox:AddToggle("AntiHearing", {
-        Text = "反飞哥听觉",
+        Text = "反Figure听觉",
         Default = false,
         Visible = not Script.IsFools
     })
 end
 
-local TrollingGroupBox = Tabs.Exploits:AddLeftGroupbox("坑人：不翻译") do
+local TrollingGroupBox = Tabs.Exploits:AddLeftGroupbox("坑人") do
     TrollingGroupBox:AddToggle("SpamOtherTools", {
         Text = "Spam Other Tools",
         Default = false
@@ -2992,6 +3351,11 @@ local TrollingGroupBox = Tabs.Exploits:AddLeftGroupbox("坑人：不翻译") do
 
     TrollingGroupBox:AddToggle("UpsideDown", {
         Text = "Upside Down",
+        Default = false
+    })
+
+    TrollingGroupBox:AddToggle("Twerk", {
+        Text = "Twerk",
         Default = false
     })
 end
@@ -3014,7 +3378,7 @@ local BypassGroupBox = Tabs.Exploits:AddRightGroupbox("绕过") do
     BypassGroupBox:AddDivider()
 
     BypassGroupBox:AddToggle("AnticheatManipulation", {
-        Text = "反作弊操纵(什么玩意)",
+        Text = "反作弊控制",
         Default = false,
     }):AddKeyPicker("AnticheatManipulationKey", {
         Default = "T",
@@ -3026,9 +3390,7 @@ local BypassGroupBox = Tabs.Exploits:AddRightGroupbox("绕过") do
     BypassGroupBox:AddToggle("Godmode", {
         Text = "上帝模式",
         Default = false,
-        Risky = true,
-        Tooltip = "如果你无法起来 请开启跳跃并跳.",
-        Visible = false
+        Risky = true
     })
 
     BypassGroupBox:AddDivider()
@@ -3043,7 +3405,7 @@ local BypassGroupBox = Tabs.Exploits:AddRightGroupbox("绕过") do
         Text = "无限十字架",
         Default = false,
         Visible = not Script.IsFools,
-        Tooltip = "可能趋势或丢失",
+        Tooltip = "丢失/趋势",
         Risky = true
     })
 
@@ -3055,10 +3417,11 @@ local BypassGroupBox = Tabs.Exploits:AddRightGroupbox("绕过") do
     })
 
     BypassGroupBox:AddToggle("DeleteSeek", {
-        Text = "删除Seek(FE)",
+        Text = "删除Seek",
         Default = false
     })
 end
+
 --// Anti Entity \\--
 Toggles.AntiDread:OnChanged(function(value)
     if not Script.MainGame then return end
@@ -3746,7 +4109,7 @@ Toggles.FakeRevive:OnChanged(function(value)
 end)
 
 end)() end,
-    [18] = function()local wax,script,require=ImportGlobals(18)local ImportGlobals return (function(...)--// Linoria \\--
+    [20] = function()local wax,script,require=ImportGlobals(20)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -3758,15 +4121,15 @@ local Tabs = Script.Tabs
 if Script.IsHotel then
     local Hotel_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("反实体") do
         Hotel_AntiEntityGroupBox:AddToggle("AntiSeekObstructions", {
-            Text = "反SEEK手臂",
+            Text = "反Seek触手",
             Default = false
         })
     end
 
     local Hotel_BypassGroupBox = Tabs.Floor:AddLeftGroupbox("绕过") do
         Hotel_BypassGroupBox:AddToggle("AvoidRushAmbush", {
-            Text = "躲避Rush/Ambush",
-            Tooltip = "不在温室工作:(",
+            Text = "躲避冲刺类怪物",
+            Tooltip = "不在温室工作 :(",
             Default = false,
             Risky = true
         })
@@ -3774,8 +4137,7 @@ if Script.IsHotel then
 
     local Hotel_FarmGroupBox = Tabs.Floor:AddLeftGroupbox("农场") do
         Hotel_FarmGroupBox:AddToggle("KnobFarm", {
-            Text = "门把农场",
-            Tooltip = "只在ROOM100运行并且Figure已经生成",
+            Text = "Knob农场",
             Default = false
         })
     end
@@ -3785,13 +4147,14 @@ if Script.IsHotel then
             Text = "无配音",
             Default = false
         })
+
         Hotel_ModifiersGroupBox:AddToggle("AntiA90", {
             Text = "反A90",
             Default = false
         })
 
         Hotel_ModifiersGroupBox:AddToggle("NoJammin", {
-            Text = "无伸进音乐",
+            Text = "无Jammin音乐",
             Default = false
         })
     end
@@ -3872,7 +4235,7 @@ if Script.IsHotel then
         if jamminEffect then jamminEffect.Enabled = not value end
     end)
 elseif Script.IsMines then
-    local Mines_MovementGroupBox = Tabs.Floor:AddLeftGroupbox("Movement") do
+    local Mines_MovementGroupBox = Tabs.Floor:AddLeftGroupbox("移动") do
         Mines_MovementGroupBox:AddSlider("MaxSlopeAngle", {
             Text = "最大地板坡度",
             Default = 45,
@@ -3889,7 +4252,7 @@ elseif Script.IsMines then
         })
 
         Mines_AntiEntityGroupBox:AddToggle("AntiGloomEgg", {
-            Text = "反苍蝇屎",
+            Text = "反Gloom蛋",
             Default = false
         })
 
@@ -3897,10 +4260,12 @@ elseif Script.IsMines then
             Text = "反坠桥",
             Default = false
         })
+
         Mines_AntiEntityGroupBox:AddToggle("AntiPipeGap", {
-            Text = "防管道间隙",
+            Text = "反管道间隙",
             Default = false
         })
+
         Mines_AntiEntityGroupBox:AddToggle("AntiSeekFlood", {
             Text = "反Seek周围变红",
             Default = false
@@ -3909,12 +4274,12 @@ elseif Script.IsMines then
 
     local Mines_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("自动化") do
         Mines_AutomationGroupBox:AddButton({
-            Text = "击败DOOR200",
+            Text = "击败door200",
             Func = function()
                 if Script.LatestRoom.Value < 99 then
                     shared.Notify:Alert({
-                        Title = "击败Door 200",
-                        Description = "你压根没到...",
+                        Title = "击败200",
+                        Description = "你没到200...",
                         Time = 5
                     })
 
@@ -3977,7 +4342,7 @@ elseif Script.IsMines then
             end
         })
 
-        MMines_AutomationGroupBox:AddToggle("TheMinesAnticheatBypass", {
+        Mines_AutomationGroupBox:AddToggle("TheMinesAnticheatBypass", {
             Text = "反作弊绕过",
             Default = false
         })
@@ -3998,7 +4363,7 @@ elseif Script.IsMines then
     
     local Mines_VisualGroupBox = Tabs.Floor:AddRightGroupbox("虚拟") do
         Mines_VisualGroupBox:AddToggle("MinecartPathVisualiser", {
-            Text = "显示正确SEEK路径",
+            Text = "显示正确Seek路径",
             Default = false
         })
     end
@@ -4014,20 +4379,20 @@ elseif Script.IsMines then
 
             if shared.Library.IsMobile then
                 shared.Notify:Alert({
-                    Title = "反作弊绕过",
-                    Description = "想绕过AC，你必须互动梯子.",
-                    Reason = "梯子透视已开启 请不要在梯子上移动.",
+                    Title = "Anticheat bypass",
+                    Description = "To bypass the ac, you must interact with a ladder.",
+                    Reason = "Ladder ESP has been enabled, do not move while on the ladder.",
 
-                    LinoriaMessage = "想绕过AC，你必须互动梯子. 梯子透视已开启 请不要在梯子上移动.",
+                    LinoriaMessage = "To bypass the anticheat, you must interact with a ladder. Ladder ESP has been enabled.\nDo not move while on the ladder.",
                     Time = progressPart
                 })
             else
                 shared.Notify:Alert({
-                    Title = "反作弊绕过",
-                    Description = "想绕过AC，你必须互动梯子.",
-                    Reason = "梯子透视已开启 请不要在梯子上移动.",
+                    Title = "Anticheat bypass",
+                    Description = "To bypass the ac, you must interact with a ladder.",
+                    Reason = "Ladder ESP has been enabled, do not move while on the ladder.",
 
-                    LinoriaMessage = "To bypass the anticheat, you must interact with a ladder. Ladder ESP has been enabled.\n梯子透视已开启 请不要在梯子上移动.",
+                    LinoriaMessage = "To bypass the anticheat, you must interact with a ladder. Ladder ESP has been enabled.\nDo not move while on the ladder.",
                     Time = progressPart
                 })
             end
@@ -4214,30 +4579,30 @@ elseif Script.IsBackdoor then
         end
     end))
 elseif Script.IsRooms then
-    local Rooms_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("反实体") do
+    local Rooms_AntiEntityGroupBox = Tabs.Floor:AddLeftGroupbox("Anti-Entity") do
         Rooms_AntiEntityGroupBox:AddToggle("AntiA90", {
-            Text = "反A90",
+            Text = "Anti-A90",
             Default = false
         })
     end
 
-    local Rooms_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("自动化") do
+    local Rooms_AutomationGroupBox = Tabs.Floor:AddRightGroupbox("Automation") do
         Rooms_AutomationGroupBox:AddToggle("AutoRooms", {
-            Text = "自动ROOMS",
+            Text = "Auto Rooms",
             Default = false
         })
 
-        Rooms_AutomationGroupBox:AddLabel("推荐设置：\n禁用速度绕过和穿墙", true)
+        Rooms_AutomationGroupBox:AddLabel("Recommended Settings:\nSpeed Bypass and Noclip disabled", true)
 
         Rooms_AutomationGroupBox:AddDivider()
 
         Rooms_AutomationGroupBox:AddToggle("AutoRoomsDebug", { 
-            Text = "显示DEBUG信息(不翻译)",
+            Text = "Show Debug Info",
             Default = false
         })
         
         Rooms_AutomationGroupBox:AddToggle("ShowAutoRoomsPathNodes", { 
-            Text = "显示计算路经点(不翻译)",
+            Text = "Show Pathfinding Nodes",
             Default = false
         })
 
@@ -4246,9 +4611,9 @@ elseif Script.IsRooms then
     Toggles.AntiA90:OnChanged(function(value)
         if Toggles.AutoRooms.Value and not value then
             shared.Notify:Alert({
-                Title = "自动ROOMS",
-                Description = "自动Rooms需要反A90!",
-                Reason = "反A90已打开",
+                Title = "Auto Rooms",
+                Description = "Anti A-90 is required for Auto Rooms to work!",
+                Reason = "Anti A-90 has been enabled",
             })
             
             Toggles.AntiA90:SetValue(true)
@@ -4705,7 +5070,7 @@ elseif Script.IsFools then
     end)
 end
 end)() end,
-    [19] = function()local wax,script,require=ImportGlobals(19)local ImportGlobals return (function(...)--// Linoria \\--
+    [21] = function()local wax,script,require=ImportGlobals(21)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -4716,12 +5081,12 @@ local Tabs = Script.Tabs
 --// Main \\--
 local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("玩家") do
     PlayerGroupBox:AddToggle("EnableSpeedHack", {
-        Text = "速度提升",
+        Text = "速度黑客",
         Default = false
     })
 
     PlayerGroupBox:AddSlider("WalkSpeed", {
-        Text = "行走速度",
+        Text = "移动速度",
         Default = 15,
         Min = 0,
         Max = 22,
@@ -4745,19 +5110,19 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("玩家") do
     })
 
     PlayerGroupBox:AddToggle("NoAccel", {
-        Text = "无加速",
+        Text = "无加速度",
         Default = false
     })
 
     PlayerGroupBox:AddDivider()
 
     PlayerGroupBox:AddToggle("InstaInteract", {
-        Text = "瞬间互动",
+        Text = "瞬间交互",
         Default = false
     })
 
     PlayerGroupBox:AddToggle("FastClosetExit", {
-        Text = "快速出柜",
+        Text = "快速出柜子",
         Default = false
     })
 
@@ -4793,19 +5158,19 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("玩家") do
     })
 end
 
-local ReachGroupBox = Tabs.Main:AddLeftGroupbox("到达") do
+local ReachGroupBox = Tabs.Main:AddLeftGroupbox("范围") do
     ReachGroupBox:AddToggle("DoorReach", {
         Text = "门范围",
         Default = false
     })
 
     ReachGroupBox:AddToggle("PromptClip", {
-        Text = "Prompt Clip【不翻译】",
+        Text = "Prompt Clip",
         Default = false
     })
 
     ReachGroupBox:AddSlider("PromptReachMultiplier", {
-        Text = "Prompt Reach Multiplier【不翻译】",
+        Text = "Prompt Reach Multiplier",
         Default = 1,
         Min = 1,
         Max = 2,
@@ -4830,7 +5195,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
         Default = {"Jeff Items"},
         Multi = true,
 
-        Text = "互动列表"
+        Text = "忽略列表"
     })
 
     AutomationGroupBox:AddDivider()
@@ -4843,7 +5208,9 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
     AutomationGroupBox:AddToggle("AutoWardrobe", {
         Text = "自动" .. Script.HidingPlaceName[Script.Floor.Value],
         Default = false,
-        Visible = not Script.IsRetro
+        Tooltip = "1145141919180",
+        Visible = not Script.IsRetro,
+        Risky = true
     }):AddKeyPicker("AutoWardrobeKey", {
         Mode = "Toggle",
         Default = "Q",
@@ -4881,11 +5248,11 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
             Default = "Legit",
             Multi = false,
 
-            Text = "自动闸盒模式"
+            Text = "自动电闸模式"
         })
 
         AutomationGroupBox:AddToggle("AutoBreakerSolver", {
-            Text = "自动闸盒",
+            Text = "自动电闸盒",
             Default = false
         })
 
@@ -5022,7 +5389,7 @@ Options.PromptReachMultiplier:OnChanged(function(value)
     end
 end)
 end)() end,
-    [20] = function()local wax,script,require=ImportGlobals(20)local ImportGlobals return (function(...)--// Linoria \\--
+    [22] = function()local wax,script,require=ImportGlobals(22)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -5088,7 +5455,7 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
         })
     
         ESPTab:AddToggle("GoldESP", {
-            Text = "金子",
+            Text = "金",
             Default = false,
         }):AddColorPicker("GoldEspColor", {
             Default = Color3.new(1, 1, 0),
@@ -5116,7 +5483,7 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
         })
 
         ESPSettingsTab:AddSlider("ESPFillTransparency", {
-            Text = "内透明",
+            Text = "内填充透明度",
             Default = 0.75,
             Min = 0,
             Max = 1,
@@ -5124,7 +5491,7 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
         })
     
         ESPSettingsTab:AddSlider("ESPOutlineTransparency", {
-            Text = "外透明",
+            Text = "外填充透明度",
             Default = 0,
             Min = 0,
             Max = 1,
@@ -5139,7 +5506,7 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
         })
     
         ESPSettingsTab:AddSlider("ESPTextSize", {
-            Text = "字大小",
+            Text = "字体尺寸",
             Default = 22,
             Min = 16,
             Max = 26,
@@ -5170,7 +5537,7 @@ local ESPTabBox = Tabs.Visuals:AddLeftTabbox() do
         })
 
         ESPSettingsTab:AddSlider("ESPArrowCenterOffset", {
-            Text = "箭头偏移",
+            Text = "箭头中心偏移",
             Default = 300,
             Min = 0,
             Max = 500,
@@ -5181,7 +5548,7 @@ end
 
 local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("氛围") do
     AmbientGroupBox:AddSlider("Brightness", {
-        Text = "高亮",
+        Text = "亮度",
         Default = 0,
         Min = 0,
         Max = 3,
@@ -5189,12 +5556,12 @@ local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("氛围") do
     })
 
     AmbientGroupBox:AddToggle("Fullbright", {
-        Text = "夜视",
+        Text = "高亮",
         Default = false,
     })
 
     AmbientGroupBox:AddToggle("NoFog", {
-        Text = "无雾",
+        Text = "没有雾",
         Default = false,
     })
 
@@ -5205,7 +5572,7 @@ local AmbientGroupBox = Tabs.Visuals:AddLeftGroupbox("氛围") do
 end
 
 local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
-    local NotifyTab = NotifyTabBox:AddTab("提示") do
+    local NotifyTab = NotifyTabBox:AddTab("Notifier") do
         NotifyTab:AddDropdown("NotifyEntity", {
             AllowNull = true,
             Values = {"Blitz", "Lookman", "Rush", "Ambush", "Eyes", "Halt Room", "A60", "A120", "Jeff The Killer", "Gloombat Swarm", "Void/Glitch"},
@@ -5216,12 +5583,12 @@ local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
         })
 
         NotifyTab:AddToggle("NotifyPadlock", {
-            Text = "提示图书馆密码",
+            Text = "图书馆密码提示",
             Default = false,
         })
 
         NotifyTab:AddToggle("NotifyOxygen", {
-            Text = "提示氧气",
+            Text = "氧气提示",
             Default = false,
         })
 
@@ -5234,7 +5601,7 @@ local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
     local NotifySettingsTab = NotifyTabBox:AddTab("设置") do
         NotifySettingsTab:AddToggle("NotifyChat", {
             Text = "聊天提示",
-            Tooltip = "AWA",
+            Tooltip = "实体和密码锁",
             Default = false,
         })
 
@@ -5255,7 +5622,7 @@ local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
         })
 
         NotifySettingsTab:AddSlider("NotifyVolume", {
-            Text = "音量大小",
+            Text = "提示音量",
             Default = 2,
             Min = 0,
             Max = 5,
@@ -5288,7 +5655,7 @@ local NotifyTabBox = Tabs.Visuals:AddRightTabbox() do
             Default = "Linoria",
             Multi = false,
 
-            Text = "awa"
+            Text = "啥玩意"
         })
     end
 end
@@ -5314,13 +5681,13 @@ local SelfTabBox = Tabs.Visuals:AddRightTabbox() do
         })
         
         SelfTab:AddToggle("NoCamBob", {
-            Text = "无摄像机晃动",
+            Text = "无晃动",
             Default = false,
             Visible = wax.shared.ExecutorSupport["require"]
         })
     
         SelfTab:AddToggle("NoCamShake", {
-            Text = "无相机抖动",
+            Text = "无抖动",
             Default = false,
             Visible = wax.shared.ExecutorSupport["require"]
         })
@@ -5331,7 +5698,7 @@ local SelfTabBox = Tabs.Visuals:AddRightTabbox() do
         })
     
         SelfTab:AddToggle("TranslucentHidingSpot", {
-            Text = "透明度" .. Script.HidingPlaceName[Script.Floor.Value],
+            Text = "透明" .. Script.HidingPlaceName[Script.Floor.Value],
             Default = false
         })
         
@@ -5347,17 +5714,17 @@ local SelfTabBox = Tabs.Visuals:AddRightTabbox() do
 
     local EffectsTab = SelfTabBox:AddTab("效果") do
         EffectsTab:AddToggle("NoGlitchEffect", {
-            Text = "无Glitch效果",
+            Text = "无故障效果",
             Default = false
         })
 
         EffectsTab:AddToggle("NoVoidEffect", {
-            Text = "无Void效果",
+            Text = "无虚空效果",
             Default = false
         })
 
         EffectsTab:AddToggle("NoSpiderJumpscare", {
-            Text = "无蜘蛛跳脸",
+            Text = "无蜘蛛跳杀",
             Default = false
         })
     end
@@ -5929,7 +6296,7 @@ Toggles.NoSpiderJumpscare:OnChanged(function(value)
     end
 end)
 end)() end,
-    [22] = function()local wax,script,require=ImportGlobals(22)local ImportGlobals return (function(...)--// Linoria \\--
+    [24] = function()local wax,script,require=ImportGlobals(24)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -6155,7 +6522,7 @@ Toggles.Twerk:OnChanged(function(value)
     shared.Twerk:Set(value)
 end)
 end)() end,
-    [24] = function()local wax,script,require=ImportGlobals(24)local ImportGlobals return (function(...)--// Linoria \\--
+    [26] = function()local wax,script,require=ImportGlobals(26)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -6231,7 +6598,7 @@ Toggles.Twerk:OnChanged(function(value)
     shared.Twerk:Set(value)
 end)
 end)() end,
-    [25] = function()local wax,script,require=ImportGlobals(25)local ImportGlobals return (function(...)--// Linoria \\--
+    [27] = function()local wax,script,require=ImportGlobals(27)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -6368,7 +6735,7 @@ Options.FlySpeed:OnChanged(function(value)
     shared.Fly:SetSpeed(value)
 end)
 end)() end,
-    [26] = function()local wax,script,require=ImportGlobals(26)local ImportGlobals return (function(...)--// Linoria \\--
+    [28] = function()local wax,script,require=ImportGlobals(28)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -6659,7 +7026,429 @@ Toggles.AntiLag:OnChanged(function(value)
     shared.Lighting.GlobalShadows = not value
 end)
 end)() end,
-    [30] = function()local wax,script,require=ImportGlobals(30)local ImportGlobals return (function(...)--// Linoria \\--
+    [31] = function()local wax,script,require=ImportGlobals(31)local ImportGlobals return (function(...)--// Linoria \\--
+local Toggles = shared.Toggles
+local Options = shared.Options
+
+--// Variables \\--
+local Script = shared.Script
+
+--// Functions \\--
+function Script.Functions.SetupCharacterConnection(newCharacter)
+    shared.Character = newCharacter
+    shared.Humanoid = shared.Character:WaitForChild("Humanoid")
+
+    Script.System = shared.Character:WaitForChild("System")
+    Script.Event = Script.System:WaitForChild("Event")
+    Script.Action = Script.System:WaitForChild("Action")
+
+    Script.Functions.SetupCharacterDeathConnection(newCharacter)
+
+    if shared.Humanoid then
+        Script.LastSpeed = shared.Humanoid.WalkSpeed
+        Script.LastJumpPower = shared.Humanoid.UseJumpPower and shared.Humanoid.JumpPower or shared.Humanoid.JumpHeight
+
+        if Toggles.SpeedHack.Value then shared.Humanoid.WalkSpeed = Options.WalkSpeed.Value end
+        
+        if Toggles.JumpPowerHack.Value then
+            if shared.Humanoid.UseJumpPower then
+                shared.Humanoid.JumpPower = Options.JumpPower.Value
+            else
+                shared.Humanoid.JumpHeight = Options.JumpPower.Value
+            end
+        end
+
+        shared.Twerk:Setup()
+        if Toggles.Twerk.Value then
+            shared.Twerk:Enable()
+        end
+
+        shared.Connect:GiveSignal(shared.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+            if shared.Humanoid.WalkSpeed ~= Options.WalkSpeed.Value then
+                Script.LastSpeed = shared.Humanoid.WalkSpeed
+                if Toggles.SpeedHack.Value then shared.Humanoid.WalkSpeed = Options.WalkSpeed.Value end
+            end
+        end))
+
+        shared.Connect:GiveSignal(shared.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+            if not shared.Humanoid.UseJumpPower then return end
+            if shared.Humanoid.JumpPower ~= Options.JumpPower.Value then
+                Script.LastJumpPower = shared.Humanoid.JumpPower
+                if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpPower = Options.JumpPower.Value end
+            end
+        end))
+        shared.Connect:GiveSignal(shared.Humanoid:GetPropertyChangedSignal("JumpHeight"):Connect(function()
+            if shared.Humanoid.UseJumpPower then return end
+            if shared.Humanoid.JumpHeight ~= Options.JumpPower.Value then
+                Script.LastJumpPower = shared.Humanoid.JumpHeight
+                if Toggles.JumpPowerHack.Value then shared.Humanoid.JumpHeight = Options.JumpPower.Value end
+            end
+        end))
+    end
+
+    if Toggles.Godmode.Value then
+        Script.DidGodmode = true
+
+        repeat task.wait() until #Script.Map.Floor:GetChildren() > 0
+        
+        Script.Event:FireServer("FallDamage", {
+            Sliding = false,
+            OriginalDamage = (0/0),
+            Sound = "LR^SS",
+            Softened = true,
+            Broken = false,
+            Model = Script.Map.Floor:FindFirstChildOfClass("Model"),
+            Range = 19,
+            Damage = (0/0)
+        })
+    end
+
+    if Toggles.NoFall.Value then
+        local fallDamage = shared.Character:WaitForChild("FallDamage")
+        if fallDamage then
+            fallDamage.Enabled = false
+        end
+    end
+
+    shared.RootPart = shared.Character:WaitForChild("HumanoidRootPart")
+end
+
+function Script.Functions.SetupCharacterDeathConnection(newCharacter)
+    shared.Connect:GiveSignal(newCharacter:WaitForChild("Humanoid").Died:Connect(function()
+        if Toggles.AutoRespawn.Value then
+            Script.Functions.Respawn()
+        end
+    end))
+end
+
+function Script.Functions.SetupLightingConnection()
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
+        if shared.Lighting.Ambient ~= Script.CurrentAmbient and shared.Lighting.Ambient ~= Color3.new(1, 1, 1) then
+            Script.CurrentAmbient = shared.Lighting.Ambient
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.Ambient = Color3.new(1, 1, 1)
+        end
+    end))
+
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Bottom"):Connect(function()
+        if shared.Lighting.ColorShift_Bottom ~= Script.CurrentColorShift_Bottom and shared.Lighting.ColorShift_Bottom ~= Color3.new(1, 1, 1) then
+            Script.CurrentColorShift_Bottom = shared.Lighting.ColorShift_Bottom
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+        end
+    end))
+
+    shared.Connect:GiveSignal(shared.Lighting:GetPropertyChangedSignal("ColorShift_Top"):Connect(function()
+        if shared.Lighting.ColorShift_Top ~= Script.CurrentColorShift_Top and shared.Lighting.ColorShift_Top ~= Color3.new(1, 1, 1) then
+            Script.CurrentColorShift_Top = shared.Lighting.ColorShift_Top
+        end
+
+        if Toggles.Fullbright.Value then
+            shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+        end
+    end))
+
+    if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+        shared.Connect:GiveSignal(shared.Lighting["FoggyDay_Atmosphere"]:GetPropertyChangedSignal("Density"):Connect(function()
+            if shared.Lighting["FoggyDay_Atmosphere"].Density ~= Script.CurrentFoggyDayDensity and shared.Lighting["FoggyDay_Atmosphere"].Density ~= 0 then
+                Script.CurrentFoggyDayDensity = shared.Lighting["FoggyDay_Atmosphere"].Density
+            end
+
+            if Toggles.NoFog.Value then
+                shared.Lighting["FoggyDay_Atmosphere"].Density = 0
+            end
+        end))
+    end
+
+    if Toggles.Fullbright.Value then
+        shared.Lighting.Ambient = Color3.new(1, 1, 1)
+        shared.Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+        shared.Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+    end
+
+    if Toggles.NoFog.Value then
+        shared.Lighting.FogEnd = 9e9
+
+        if shared.Lighting:FindFirstChild("FoggyDay_Atmosphere") then
+            shared.Lighting["FoggyDay_Atmosphere"].Density = 0
+        end
+    end
+end
+
+function Script.Functions.SetupBloxstrapRPCConnection()
+    if not wax.shared.BloxstrapRPC then return end
+
+    shared.Connect:GiveSignal(Script.CurrentDay:GetPropertyChangedSignal("Text"):Connect(function()
+        Script.Functions.UpdateBloxstrapRPC()
+    end))
+
+    Script.Functions.UpdateBloxstrapRPC()
+end
+
+function Script.Functions.IsLoaded(model)
+    return model.PrimaryPart ~= nil
+end
+
+function Script.Functions.SetupChild(child, options)
+    if not Script.Functions.IsLoaded(child) then
+        child:GetPropertyChangedSignal("PrimaryPart"):Wait()
+    end
+
+    repeat task.wait() until options["Condition"]() or shared.Library.Unloaded
+    if shared.Library.Unloaded then return end
+
+    local esp = Script.Functions[options["ESPfunction"]](child)
+
+    local shouldDestroyESP = false
+    if Script.Functions.IsLoaded(child) then
+        task.spawn(function()
+            child:GetPropertyChangedSignal("PrimaryPart"):Wait()
+            shouldDestroyESP = true
+        end)
+
+        task.spawn(function()
+            repeat task.wait() until shouldDestroyESP or not options["Condition"]() or shared.Library.Unloaded
+            shouldDestroyESP = true
+        end)
+    end
+    
+    repeat task.wait() until shouldDestroyESP
+    esp.Destroy()
+
+    if shared.Library.Unloaded then return end
+    Script.Functions.SetupChild(child, options)
+end
+
+function Script.Functions.SetupExploitInfModulesConnection()
+    shared.Connect:GiveSignal(Script.PlayerStats:WaitForChild("Energy").Value:GetPropertyChangedSignal("Text"):Connect(function()
+        if Toggles.InfiniteEnergy.Value and not Toggles.Godmode.Value then
+            Script.Event:FireServer("DecreaseStat", {
+                Stats = {
+                    Energy = -100
+                }
+            })
+        end
+    end))
+
+    shared.Connect:GiveSignal(Script.PlayerStats:WaitForChild("Hunger").Value:GetPropertyChangedSignal("Text"):Connect(function()
+        if Toggles.InfiniteHunger.Value and not Toggles.Godmode.Value then
+            Script.Event:FireServer("DecreaseStat", {
+                Stats = {
+                    Hunger = -100
+                }
+            })
+        end
+    end))
+end
+
+function Script.Functions.SetupOtherPlayerConnection()
+    for _, player in pairs(shared.Players:GetPlayers()) do
+        if player == shared.LocalPlayer then continue end
+
+        task.spawn(Script.Functions.SetupChild, player.Character, {
+            Condition = function()
+                return Toggles.PlayerESP and Toggles.PlayerESP.Value
+            end,
+            ESPfunction = "PlayerESP",
+            Descendant = player.Character.Parent
+        })
+    end
+
+    shared.Connect:GiveSignal(shared.Players.PlayerAdded:Connect(function(player)
+        if player == shared.LocalPlayer then return end
+
+        task.spawn(Script.Functions.SetupChild, player.Character, {
+            Condition = function()
+                return Toggles.PlayerESP and Toggles.PlayerESP.Value
+            end,
+            ESPfunction = "PlayerESP",
+            Descendant = player.Character.Parent
+        })
+    end))
+end
+
+
+function Script.Functions.SetupEmployeeConnection()
+    for _, employee in ipairs(Script.Employees:GetChildren()) do
+        task.spawn(Script.Functions.SetupChild, employee, {
+            Condition = function()
+                return Toggles.EmployeeESP and Toggles.EmployeeESP.Value
+            end,
+            ESPfunction = "EmployeeESP",
+            Descendant = Script.Employees
+        })
+    end
+
+    shared.Connect:GiveSignal(Script.Employees.ChildAdded:Connect(function(employee)
+        task.spawn(Script.Functions.SetupChild, employee, {
+            Condition = function()
+                return Toggles.EmployeeESP and Toggles.EmployeeESP.Value
+            end,
+            ESPfunction = "EmployeeESP",
+            Descendant = Script.Employees
+        })
+    end))
+end
+
+
+function Script.Functions.SetupItemConnection()
+    for _, item in ipairs(Script.Items:GetChildren()) do
+        task.spawn(Script.Functions.SetupChild, item, {
+            Condition = function()
+                return Toggles.ItemESP and Toggles.ItemESP.Value
+            end,
+            ESPfunction = "ItemESP",
+            Descendant = Script.Items
+        })
+    end
+
+    shared.Connect:GiveSignal(Script.Items.ChildAdded:Connect(function(item)
+        task.spawn(Script.Functions.SetupChild, item, {
+            Condition = function()
+                return Toggles.ItemESP and Toggles.ItemESP.Value
+            end,
+            ESPfunction = "ItemESP",
+            Descendant = Script.Items
+        })
+    end))
+end
+end)() end,
+    [32] = function()local wax,script,require=ImportGlobals(32)local ImportGlobals return (function(...)--// Linoria \\--
+local Toggles = shared.Toggles
+local Options = shared.Options
+
+--// Variables \\--
+local Script = shared.Script
+local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
+shared.ESPLibrary = ESPLibrary
+
+type ESP = {
+    Color: Color3,
+    IsEntity: boolean,
+    IsDoubleDoor: boolean,
+    Object: Instance,
+    Offset: Vector3,
+    Text: string,
+    TextParent: Instance,
+    Type: string
+}
+
+function Script.Functions.ESP(args: ESP)
+    if not args.Object then return Script.Functions.Warn("ESP Object is nil") end
+
+    local ESPManager = {
+        Object = args.Object,
+        Text = args.Text or "No Text",
+        Color = args.Color or Color3.new(),
+        Offset = args.Offset or Vector3.zero,
+        IsEntity = args.IsEntity or false,
+        IsDoubleDoor = args.IsDoubleDoor or false,
+        Type = args.Type or "None",
+        OnDestroy = args.OnDestroy or nil,
+
+        Invisible = false,
+        Humanoid = nil
+    }
+
+    if ESPManager.IsEntity and ESPManager.Object.PrimaryPart then
+        if ESPManager.Object.PrimaryPart.Transparency == 1 then
+            ESPManager.Invisible = true
+            ESPManager.Object.PrimaryPart.Transparency = 0.99
+        end
+
+        local humanoid = ESPManager.Object:FindFirstChildOfClass("Humanoid")
+        if not humanoid then humanoid = Instance.new("Humanoid", ESPManager.Object) end
+        ESPManager.Humanoid = humanoid
+    end
+
+    local ESPInstance = ESPLibrary.ESP.Highlight({
+        Name = ESPManager.Text,
+        Model = ESPManager.Object,
+        StudsOffset = ESPManager.Offset,
+
+        FillColor = ESPManager.Color,
+        OutlineColor = ESPManager.Color,
+        TextColor = ESPManager.Color,
+        TextSize = Options.ESPTextSize.Value or 16,
+
+        FillTransparency = Options.ESPFillTransparency.Value,
+        OutlineTransparency = Options.ESPOutlineTransparency.Value,
+
+        Tracer = {
+            Enabled = Toggles.ESPTracer.Value,
+            From = Options.ESPTracerStart.Value,
+            Color = ESPManager.Color
+        },
+        
+        Arrow = {
+            Enabled = Toggles.ESPArrow.Value,
+            CenterOffset = Options.ESPArrowCenterOffset.Value,
+            Color = ESPManager.Color
+        },
+
+        OnDestroy = ESPManager.OnDestroy or function()
+            if ESPManager.Object.PrimaryPart and ESPManager.Invisible then ESPManager.Object.PrimaryPart.Transparency = 1 end
+            if ESPManager.Humanoid then ESPManager.Humanoid:Destroy() end
+        end
+    })
+
+    table.insert(Script.ESPTable[args.Type], ESPInstance)
+
+    return ESPInstance
+end
+
+function Script.Functions.PlayerESP(character: Model)
+    if not (character and character.PrimaryPart and character:FindFirstChild("Humanoid") and character.Humanoid.Health > 0) then return end
+
+    local playerEsp = Script.Functions.ESP({
+        Type = "Player",
+        Object = character,
+        Text = string.format("%s [%.1f]", character.Name, character.Humanoid.Health),
+        TextParent = character.PrimaryPart,
+        Color = Options.PlayerEspColor.Value
+    })
+
+    Script.FeatureConnections.Player[character.Name] = character.Humanoid.HealthChanged:Connect(function(newHealth)
+        if newHealth > 0 then
+            playerEsp.SetText(string.format("%s [%.1f]", character.Name, newHealth))
+        else
+            if Script.FeatureConnections.Player[character.Name] then Script.FeatureConnections.Player[character.Name]:Disconnect() end
+            playerEsp.Destroy()
+        end
+    end)
+
+    return playerEsp
+end
+
+function Script.Functions.EmployeeESP(employee: Model)
+    if not (employee and employee.PrimaryPart and employee:FindFirstChild("Enemy")) then return end
+
+    return Script.Functions.ESP({
+        Type = "Employee",
+        Object = employee,
+        Text = employee.Name,
+        TextParent = employee.PrimaryPart,
+        Color = Options.EmployeeEspColor.Value
+    })
+end
+
+function Script.Functions.ItemESP(item: Model)
+    if not (item and item.PrimaryPart) then return end
+
+    return Script.Functions.ESP({
+        Type = "Item",
+        Object = item,
+        Text = item.Name,
+        TextParent = item.PrimaryPart,
+        Color = Options.ItemEspColor.Value
+    })
+end
+end)() end,
+    [35] = function()local wax,script,require=ImportGlobals(35)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -6879,7 +7668,7 @@ function Script.Functions.GetNearestPromptWithCondition(condition)
     return nearestPrompt
 end
 end)() end,
-    [31] = function()local wax,script,require=ImportGlobals(31)local ImportGlobals return (function(...)--// Linoria \\--
+    [36] = function()local wax,script,require=ImportGlobals(36)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -7130,7 +7919,7 @@ function Script.Functions.AutoWardrobe(child, index: number | nil)
     end)
 end
 end)() end,
-    [32] = function()local wax,script,require=ImportGlobals(32)local ImportGlobals return (function(...)--// Linoria \\--
+    [37] = function()local wax,script,require=ImportGlobals(37)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -7232,7 +8021,7 @@ function Script.Functions.AutoBreaker(code, breakers)
     end
 end
 end)() end,
-    [33] = function()local wax,script,require=ImportGlobals(33)local ImportGlobals return (function(...)--// Linoria \\--
+    [38] = function()local wax,script,require=ImportGlobals(38)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -7626,7 +8415,7 @@ function Script.Functions.SetupOtherCharacterConnection(character: Model)
 end
 
 end)() end,
-    [34] = function()local wax,script,require=ImportGlobals(34)local ImportGlobals return (function(...)--// Linoria \\--
+    [39] = function()local wax,script,require=ImportGlobals(39)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -7722,13 +8511,13 @@ function Script.Functions.DoorESP(room)
         local opened = door:GetAttribute("Opened")
         local locked = room:GetAttribute("RequiresKey")
 
-        local doorState = if opened then "[Opened]" elseif locked then "[Locked]" else ""
+        local doorState = if opened then "[打开的]" elseif locked then "[上锁的]" else ""
         local doorIdx = Script.Functions.RandomString()
 
         local doorEsp = Script.Functions.ESP({
             Type = "Door",
             Object = door:WaitForChild("Door"),
-            Text = string.format("Door %s %s", doorNumber, doorState),
+            Text = string.format("门 %s %s", doorNumber, doorState),
             Color = Options.DoorEspColor.Value,
 
             OnDestroy = function()
@@ -7737,7 +8526,7 @@ function Script.Functions.DoorESP(room)
         })
 
         Script.FeatureConnections.Door[doorIdx] = door:GetAttributeChangedSignal("Opened"):Connect(function()
-            if doorEsp then doorEsp.SetText(string.format("Door %s [Opened]", doorNumber)) end
+            if doorEsp then doorEsp.SetText(string.format("门%s [打开的]", doorNumber)) end
             if Script.FeatureConnections.Door[doorIdx] then Script.FeatureConnections.Door[doorIdx]:Disconnect() end
         end)
     end
@@ -7749,7 +8538,7 @@ function Script.Functions.ObjectiveESP(child)
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = string.format("Timer Lever [+%s]", child.TakeTimer.TextLabel.Text),
+            Text = string.format("时间拉杆 [+%s]", child.TakeTimer.TextLabel.Text),
             Color = Options.ObjectiveEspColor.Value
         })
     -- Backdoor + Hotel
@@ -7757,7 +8546,7 @@ function Script.Functions.ObjectiveESP(child)
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Key",
+            Text = "钥匙",
             Color = Options.ObjectiveEspColor.Value
         })
     -- Hotel
@@ -7765,28 +8554,28 @@ function Script.Functions.ObjectiveESP(child)
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Electrical Key",
+            Text = "电气室钥匙",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "LeverForGate" then
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Gate Lever",
+            Text = "闸门拉杆",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "LiveHintBook" then
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Book",
+            Text = "书",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "LiveBreakerPolePickup" then
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Breaker",
+            Text = "断路器",
             Color = Options.ObjectiveEspColor.Value
         })
     -- Mines
@@ -7794,21 +8583,21 @@ function Script.Functions.ObjectiveESP(child)
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Generator",
+            Text = "发电机",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "MinesGateButton" then
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Gate Power Button",
+            Text = "闸门按钮",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "FuseObtain" then
         Script.Functions.ESP({
             Type = "Objective",
             Object = child,
-            Text = "Fuse",
+            Text = "保险丝",
             Color = Options.ObjectiveEspColor.Value
         })
     elseif child.Name == "MinesAnchor" then
@@ -7818,7 +8607,7 @@ function Script.Functions.ObjectiveESP(child)
             Script.Functions.ESP({
                 Type = "Objective",
                 Object = child,
-                Text = string.format("Anchor %s", sign.TextLabel.Text),
+                Text = string.format("锚点 %s", sign.TextLabel.Text),
                 Color = Options.ObjectiveEspColor.Value
             })
         end
@@ -7832,7 +8621,7 @@ function Script.Functions.ObjectiveESP(child)
             local pumpEsp = Script.Functions.ESP({
                 Type = "Objective",
                 Object = wheel,
-                Text = "Water Pump",
+                Text = "水闸",
                 Color = Options.ObjectiveEspColor.Value,
 
                 OnDestroy = function()
@@ -7885,7 +8674,7 @@ end
 function Script.Functions.ChestESP(chest)
     local text = chest.Name:gsub("Box", ""):gsub("_Vine", ""):gsub("_Small", ""):gsub("Locked", "")
     local locked = chest:GetAttribute("Locked")
-    local state = if locked then "[Locked]" else ""
+    local state = if locked then "[上锁的]" else ""
 
     Script.Functions.ESP({
         Type = "Chest",
@@ -7929,7 +8718,7 @@ function Script.Functions.GoldESP(gold)
     Script.Functions.ESP({
         Type = "Gold",
         Object = gold,
-        Text = string.format("Gold [%s]", gold:GetAttribute("GoldValue")),
+        Text = string.format("金 [%s]", gold:GetAttribute("GoldValue")),
         Color = Options.GoldEspColor.Value
     })
 end
@@ -7949,7 +8738,7 @@ function Script.Functions.GuidingLightEsp(guidance)
     local guidanceEsp = Script.Functions.ESP({
         Type = "Guiding",
         Object = part,
-        Text = "Guidance",
+        Text = "引导",
         Color = Options.GuidingLightEspColor.Value
     })
 
@@ -7962,7 +8751,7 @@ function Script.Functions.GuidingLightEsp(guidance)
     end)
 end
 end)() end,
-    [35] = function()local wax,script,require=ImportGlobals(35)local ImportGlobals return (function(...)--// Linoria \\--
+    [40] = function()local wax,script,require=ImportGlobals(40)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8023,16 +8812,16 @@ function Script.Functions.DeleteSeek(collision: BasePart)
         
         if collision:IsDescendantOf(workspace) and (collision.Parent and collision.Parent.Name == "TriggerEventCollision") then
             shared.Notify:Alert({
-                Title = "Delete Seek FE",
-                Description = "Deleting Seek trigger...",
+                Title = "删除Seek",
+                Description = "正在删除Seek...",
                 Reason = "",
             })
 
             task.delay(4, function()
                 if collision:IsDescendantOf(workspace) then
                     shared.Notify:Alert({
-                        Title = "Delete Seek FE",
-                        Description = "Failed to delete Seek trigger!",
+                        Title = "删除Seek FE",
+                        Description = "失败!",
                         Reason = "",
                     })
                 end
@@ -8057,8 +8846,8 @@ function Script.Functions.DeleteSeek(collision: BasePart)
             
             if not collision:IsDescendantOf(workspace) then
                 shared.Notify:Log({
-                    Title = "Delete Seek FE",
-                    Description = "Deleted Seek trigger successfully!",
+                    Title = "删除Seek FE",
+                    Description = "删除成功!",
                 })
             end
         end
@@ -8083,7 +8872,7 @@ function Script.Functions.AvoidEntity(value: boolean, oldNoclip: boolean)
     end
 end
 end)() end,
-    [36] = function()local wax,script,require=ImportGlobals(36)local ImportGlobals return (function(...)--// Linoria \\--
+    [41] = function()local wax,script,require=ImportGlobals(41)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8424,7 +9213,7 @@ function Script.Functions.Minecart.DrawNodes()
     end
 end
 end)() end,
-    [37] = function()local wax,script,require=ImportGlobals(37)local ImportGlobals return (function(...)--// Linoria \\--
+    [42] = function()local wax,script,require=ImportGlobals(42)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8461,7 +9250,7 @@ function Script.Functions.GetPadlockCode(paper: Tool)
     return "_____"
 end
 end)() end,
-    [38] = function()local wax,script,require=ImportGlobals(38)local ImportGlobals return (function(...)--// Linoria \\--
+    [43] = function()local wax,script,require=ImportGlobals(43)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8516,7 +9305,7 @@ function Script.Functions.IsInViewOfPlayer(instance: Instance, range: number | n
     return false
 end
 end)() end,
-    [40] = function()local wax,script,require=ImportGlobals(40)local ImportGlobals return (function(...)--// Linoria \\--
+    [45] = function()local wax,script,require=ImportGlobals(45)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8602,7 +9391,7 @@ function Script.Functions.LoadPreset(name: string)
     })
 end
 end)() end,
-    [42] = function()local wax,script,require=ImportGlobals(42)local ImportGlobals return (function(...)--// Linoria \\--
+    [47] = function()local wax,script,require=ImportGlobals(47)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8671,7 +9460,7 @@ function Script.Functions.GetClosestFromCharacter()
     return closestCharacter
 end
 end)() end,
-    [43] = function()local wax,script,require=ImportGlobals(43)local ImportGlobals return (function(...)--// Linoria \\--
+    [48] = function()local wax,script,require=ImportGlobals(48)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8700,7 +9489,7 @@ end
 
 
 end)() end,
-    [44] = function()local wax,script,require=ImportGlobals(44)local ImportGlobals return (function(...)--// Linoria \\--
+    [49] = function()local wax,script,require=ImportGlobals(49)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8782,7 +9571,7 @@ function Script.Functions.SetupBloxstrapRPCConnection()
     end))
 end
 end)() end,
-    [45] = function()local wax,script,require=ImportGlobals(45)local ImportGlobals return (function(...)--// Linoria \\--
+    [50] = function()local wax,script,require=ImportGlobals(50)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8889,7 +9678,7 @@ function Script.Functions.PlayerESP(player: Player)
     end)
 end
 end)() end,
-    [46] = function()local wax,script,require=ImportGlobals(46)local ImportGlobals return (function(...)--// Linoria \\--
+    [51] = function()local wax,script,require=ImportGlobals(51)local ImportGlobals return (function(...)--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -8918,7 +9707,7 @@ function Script.Functions.DistanceFromCharacter(position: Instance | Vector3, ge
     return 9e9
 end
 end)() end,
-    [48] = function()local wax,script,require=ImportGlobals(48)local ImportGlobals return (function(...)local BloxstrapRPC = {}
+    [53] = function()local wax,script,require=ImportGlobals(53)local ImportGlobals return (function(...)local BloxstrapRPC = {}
 
 type RichPresence = {
     details:     string?,
@@ -8959,7 +9748,7 @@ end
 
 return BloxstrapRPC
 end)() end,
-    [49] = function()local wax,script,require=ImportGlobals(49)local ImportGlobals return (function(...)local Connect = {}
+    [54] = function()local wax,script,require=ImportGlobals(54)local ImportGlobals return (function(...)local Connect = {}
 shared.Connections = {}
 
 function Connect:GiveSignal(signal: RBXScriptConnection | RBXScriptSignal)
@@ -8976,7 +9765,7 @@ end
 
 return Connect
 end)() end,
-    [50] = function()local wax,script,require=ImportGlobals(50)local ImportGlobals return (function(...)local ExecutorSupport = {}
+    [55] = function()local wax,script,require=ImportGlobals(55)local ImportGlobals return (function(...)local ExecutorSupport = {}
 local ExecutorSupportInfo = {}
 
 local executorName = string.split(identifyexecutor() or "None", " ")[1]
@@ -9155,7 +9944,7 @@ end
 
 return ExecutorSupport
 end)() end,
-    [51] = function()local wax,script,require=ImportGlobals(51)local ImportGlobals return (function(...)local FileHelper = {}
+    [56] = function()local wax,script,require=ImportGlobals(56)local ImportGlobals return (function(...)local FileHelper = {}
 
 function FileHelper.new(basepath: string)
     local self = setmetatable({}, {
@@ -9244,7 +10033,7 @@ end
 
 return FileHelper
 end)() end,
-    [53] = function()local wax,script,require=ImportGlobals(53)local ImportGlobals return (function(...)-- Addons
+    [58] = function()local wax,script,require=ImportGlobals(58)local ImportGlobals return (function(...)-- Addons
 if getgenv().mspaint_disable_addons or getgenv().mspaint_addons_activated then 
     return {}
 end
@@ -9430,7 +10219,7 @@ end)
 
 return {}
 end)() end,
-    [54] = function()local wax,script,require=ImportGlobals(54)local ImportGlobals return (function(...)local UICreator = {}
+    [59] = function()local wax,script,require=ImportGlobals(59)local ImportGlobals return (function(...)local UICreator = {}
 
 local repo = "https://raw.githubusercontent.com/deividcomsono/LinoriaLib/refs/heads/main/"
 
@@ -9532,17 +10321,26 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:IgnoreThemeSettings()
 
+    if not isfolder("mspaint/doors/hotel") then
+        makefolder("mspaint/doors/hotel")
+    elseif not isfolder("mspaint/doors/mines") then
+        makefolder("mspaint/doors/mines")
+    elseif not isfolder("mspaint/doors/backdoor") then
+        makefolder("mspaint/doors/backdoor")
+    elseif not isfolder("mspaint/doors/rooms") then
+        makefolder("mspaint/doors/rooms")
+    end    
+
     if Script.IsHotel then
-        warn("SaveManager Decteted")
         SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif Script.IsMines then
+    elseif Scipt.IsMines then
         SaveManager:SetFolder("mspaint/doors/mines")
     elseif Script.IsBackdoor then
         SaveManager:SetFolder("mspaint/doors/backdoor")
     elseif Script.IsRooms then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
-    SaveManager:SetFolder("mspaint/doors/rooms")
+
     SaveManager:BuildConfigSection(SettingsTab)
     ThemeManager:ApplyToTab(SettingsTab)
 
@@ -9560,7 +10358,7 @@ end
 
 return UICreator
 end)() end,
-    [56] = function()local wax,script,require=ImportGlobals(56)local ImportGlobals return (function(...)local Doors = {}
+    [61] = function()local wax,script,require=ImportGlobals(61)local ImportGlobals return (function(...)local Doors = {}
 
 --// Player Variables \\--
 local mainUI
@@ -9660,7 +10458,7 @@ function Doors:Warn(options) Doors:Alert(options) end
 
 return Doors
 end)() end,
-    [57] = function()local wax,script,require=ImportGlobals(57)local ImportGlobals return (function(...)local Linoria = {}
+    [62] = function()local wax,script,require=ImportGlobals(62)local ImportGlobals return (function(...)local Linoria = {}
 
 function Linoria:Alert(options)
     if not shared.Library then return warn("No Linoria library") end
@@ -9689,7 +10487,7 @@ end
 
 return Linoria
 end)() end,
-    [58] = function()local wax,script,require=ImportGlobals(58)local ImportGlobals return (function(...)local Notify = {}
+    [63] = function()local wax,script,require=ImportGlobals(63)local ImportGlobals return (function(...)local Notify = {}
 
 local Linoria = require("Notifiers/Linoria")
 local Doors = require("Notifiers/Doors")
@@ -9726,7 +10524,7 @@ function Notify:Log(options) Notify:Notify(options) end
 
 return Notify
 end)() end,
-    [59] = function()local wax,script,require=ImportGlobals(59)local ImportGlobals return (function(...)return function(scriptType: "Utils" | "Tabs", name: string)
+    [64] = function()local wax,script,require=ImportGlobals(64)local ImportGlobals return (function(...)return function(scriptType: "Utils" | "Tabs", name: string)
     local scriptPath = script.Parent.Parent.Places[scriptType][shared.ScriptFolder or "Universal"]
 
     if shared.Mapping and shared.Mapping["Exclusions"] then
@@ -9737,7 +10535,7 @@ end)() end,
     require(scriptPath[name])
 end
 end)() end,
-    [60] = function()local wax,script,require=ImportGlobals(60)local ImportGlobals return (function(...)local Logs = {
+    [65] = function()local wax,script,require=ImportGlobals(65)local ImportGlobals return (function(...)local Logs = {
     Debug = true, --or getgenv().mspaint_dev_mode,
 
     FirstTime = true,
@@ -9790,7 +10588,7 @@ end
 
 return Logs
 end)() end,
-    [61] = function()local wax,script,require=ImportGlobals(61)local ImportGlobals return (function(...)local cloneref = (cloneref or function(instance: any) return instance end)
+    [66] = function()local wax,script,require=ImportGlobals(66)local ImportGlobals return (function(...)local cloneref = (cloneref or function(instance: any) return instance end)
 
 local Services = {}
 function Services:GetService(serviceName: string)
@@ -9810,7 +10608,7 @@ end
 
 return Services
 end)() end,
-    [63] = function()local wax,script,require=ImportGlobals(63)local ImportGlobals return (function(...)local ControlModule = if wax.shared.ExecutorSupport["require"] and shared.PlayerScripts:FindFirstChild("PlayerModule") then wax.require(shared.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")) else { replaced = true }
+    [68] = function()local wax,script,require=ImportGlobals(68)local ImportGlobals return (function(...)local ControlModule = if wax.shared.ExecutorSupport["require"] and shared.PlayerScripts:FindFirstChild("PlayerModule") then wax.require(shared.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")) else { replaced = true }
 
 if ControlModule.replaced == true then
     ControlModule = {
@@ -9873,7 +10671,7 @@ end
 
 return ControlModule
 end)() end,
-    [64] = function()local wax,script,require=ImportGlobals(64)local ImportGlobals return (function(...)local Fly = {
+    [69] = function()local wax,script,require=ImportGlobals(69)local ImportGlobals return (function(...)local Fly = {
     FlyBody = nil,
     FlyGyro = nil,
     Enabled = false, 
@@ -9936,7 +10734,7 @@ end
 
 return Fly
 end)() end,
-    [65] = function()local wax,script,require=ImportGlobals(65)local ImportGlobals return (function(...)local Twerk = {
+    [70] = function()local wax,script,require=ImportGlobals(70)local ImportGlobals return (function(...)local Twerk = {
     TwerkAnimation = nil,
     TwerkTrack = nil,
 }
@@ -9982,160 +10780,143 @@ local ObjectTree = {
         },
         {
             {
-                2,
-                2,
-                {
-                    "Mappings"
-                }
-            },
-            {
-                47,
-                1,
-                {
-                    "Utils"
-                },
-                {
-                    {
-                        52,
-                        1,
-                        {
-                            "GUI"
-                        },
-                        {
-                            {
-                                54,
-                                2,
-                                {
-                                    "Creator"
-                                }
-                            },
-                            {
-                                53,
-                                2,
-                                {
-                                    "Addons"
-                                }
-                            },
-                            {
-                                55,
-                                1,
-                                {
-                                    "Notifiers"
-                                },
-                                {
-                                    {
-                                        57,
-                                        2,
-                                        {
-                                            "Linoria"
-                                        }
-                                    },
-                                    {
-                                        56,
-                                        2,
-                                        {
-                                            "Doors"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                58,
-                                2,
-                                {
-                                    "Notify"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        61,
-                        2,
-                        {
-                            "Services"
-                        }
-                    },
-                    {
-                        51,
-                        2,
-                        {
-                            "FileHelper"
-                        }
-                    },
-                    {
-                        48,
-                        2,
-                        {
-                            "BloxstrapRPC"
-                        }
-                    },
-                    {
-                        49,
-                        2,
-                        {
-                            "Connections"
-                        }
-                    },
-                    {
-                        62,
-                        1,
-                        {
-                            "Universal"
-                        },
-                        {
-                            {
-                                63,
-                                2,
-                                {
-                                    "ControlModule"
-                                }
-                            },
-                            {
-                                65,
-                                2,
-                                {
-                                    "Twerk"
-                                }
-                            },
-                            {
-                                64,
-                                2,
-                                {
-                                    "Fly"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        60,
-                        2,
-                        {
-                            "Logs"
-                        }
-                    },
-                    {
-                        59,
-                        2,
-                        {
-                            "Loader"
-                        }
-                    },
-                    {
-                        50,
-                        2,
-                        {
-                            "ExecutorSupport"
-                        }
-                    }
-                }
-            },
-            {
                 3,
                 1,
                 {
                     "Places"
                 },
                 {
+                    {
+                        12,
+                        1,
+                        {
+                            "Tabs"
+                        },
+                        {
+                            {
+                                25,
+                                1,
+                                {
+                                    "Universal"
+                                },
+                                {
+                                    {
+                                        28,
+                                        2,
+                                        {
+                                            "Visuals"
+                                        }
+                                    },
+                                    {
+                                        27,
+                                        2,
+                                        {
+                                            "Main"
+                                        }
+                                    },
+                                    {
+                                        26,
+                                        2,
+                                        {
+                                            "Exploits"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                17,
+                                1,
+                                {
+                                    "Doors"
+                                },
+                                {
+                                    {
+                                        23,
+                                        1,
+                                        {
+                                            "Lobby"
+                                        },
+                                        {
+                                            {
+                                                24,
+                                                2,
+                                                {
+                                                    "Main"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        18,
+                                        1,
+                                        {
+                                            "Doors"
+                                        },
+                                        {
+                                            {
+                                                21,
+                                                2,
+                                                {
+                                                    "Main"
+                                                }
+                                            },
+                                            {
+                                                22,
+                                                2,
+                                                {
+                                                    "Visuals"
+                                                }
+                                            },
+                                            {
+                                                20,
+                                                2,
+                                                {
+                                                    "Floor"
+                                                }
+                                            },
+                                            {
+                                                19,
+                                                2,
+                                                {
+                                                    "Exploits"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                13,
+                                1,
+                                {
+                                    "3008"
+                                },
+                                {
+                                    {
+                                        16,
+                                        2,
+                                        {
+                                            "Visuals"
+                                        }
+                                    },
+                                    {
+                                        14,
+                                        2,
+                                        {
+                                            "Exploits"
+                                        }
+                                    },
+                                    {
+                                        15,
+                                        2,
+                                        {
+                                            "Main"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     {
                         4,
                         1,
@@ -10147,322 +10928,378 @@ local ObjectTree = {
                                 5,
                                 1,
                                 {
-                                    "Doors"
+                                    "3008"
                                 },
                                 {
-                                    {
-                                        7,
-                                        2,
-                                        {
-                                            "Lobby"
-                                        }
-                                    },
                                     {
                                         6,
                                         2,
                                         {
-                                            "Doors"
+                                            "3008"
                                         }
                                     }
                                 }
                             },
                             {
-                                8,
-                                2,
+                                7,
+                                1,
                                 {
-                                    "Template"
+                                    "Doors"
+                                },
+                                {
+                                    {
+                                        8,
+                                        2,
+                                        {
+                                            "Doors"
+                                        }
+                                    },
+                                    {
+                                        9,
+                                        2,
+                                        {
+                                            "Lobby"
+                                        }
+                                    }
                                 }
                             },
                             {
-                                9,
+                                11,
                                 2,
                                 {
                                     "Universal"
+                                }
+                            },
+                            {
+                                10,
+                                2,
+                                {
+                                    "Template"
                                 }
                             }
                         }
                     },
                     {
-                        27,
+                        29,
                         1,
                         {
                             "Utils"
                         },
                         {
                             {
-                                28,
-                                1,
-                                {
-                                    "Doors"
-                                },
-                                {
-                                    {
-                                        29,
-                                        1,
-                                        {
-                                            "Doors"
-                                        },
-                                        {
-                                            {
-                                                34,
-                                                2,
-                                                {
-                                                    "ESP"
-                                                }
-                                            },
-                                            {
-                                                33,
-                                                2,
-                                                {
-                                                    "ConnectionsFuncs"
-                                                }
-                                            },
-                                            {
-                                                38,
-                                                2,
-                                                {
-                                                    "Player"
-                                                }
-                                            },
-                                            {
-                                                30,
-                                                2,
-                                                {
-                                                    "Assets"
-                                                }
-                                            },
-                                            {
-                                                35,
-                                                2,
-                                                {
-                                                    "Entities"
-                                                }
-                                            },
-                                            {
-                                                31,
-                                                2,
-                                                {
-                                                    "AutoWardrobe"
-                                                }
-                                            },
-                                            {
-                                                32,
-                                                2,
-                                                {
-                                                    "BreakerBox"
-                                                }
-                                            },
-                                            {
-                                                37,
-                                                2,
-                                                {
-                                                    "Padlock"
-                                                }
-                                            },
-                                            {
-                                                36,
-                                                2,
-                                                {
-                                                    "Minecarts"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        39,
-                                        1,
-                                        {
-                                            "Lobby"
-                                        },
-                                        {
-                                            {
-                                                40,
-                                                2,
-                                                {
-                                                    "Preset"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                41,
+                                46,
                                 1,
                                 {
                                     "Universal"
                                 },
                                 {
                                     {
-                                        45,
-                                        2,
-                                        {
-                                            "ESP"
-                                        }
-                                    },
-                                    {
-                                        46,
-                                        2,
-                                        {
-                                            "Player"
-                                        }
-                                    },
-                                    {
-                                        44,
-                                        2,
-                                        {
-                                            "ConnectionsFuncs"
-                                        }
-                                    },
-                                    {
-                                        42,
+                                        47,
                                         2,
                                         {
                                             "Aimbot"
                                         }
                                     },
                                     {
-                                        43,
+                                        48,
                                         2,
                                         {
                                             "Assets"
                                         }
+                                    },
+                                    {
+                                        49,
+                                        2,
+                                        {
+                                            "ConnectionsFuncs"
+                                        }
+                                    },
+                                    {
+                                        50,
+                                        2,
+                                        {
+                                            "ESP"
+                                        }
+                                    },
+                                    {
+                                        51,
+                                        2,
+                                        {
+                                            "Player"
+                                        }
                                     }
                                 }
-                            }
-                        }
-                    },
-                    {
-                        10,
-                        1,
-                        {
-                            "Tabs"
-                        },
-                        {
+                            },
                             {
-                                11,
+                                30,
                                 1,
                                 {
                                     "3008"
                                 },
                                 {
                                     {
-                                        13,
+                                        32,
                                         2,
                                         {
-                                            "Main"
+                                            "ESP"
                                         }
                                     },
                                     {
-                                        14,
+                                        31,
                                         2,
                                         {
-                                            "Visuals"
-                                        }
-                                    },
-                                    {
-                                        12,
-                                        2,
-                                        {
-                                            "Exploits"
+                                            "ConnectionsFuncs"
                                         }
                                     }
                                 }
                             },
                             {
-                                15,
+                                33,
                                 1,
                                 {
                                     "Doors"
                                 },
                                 {
                                     {
-                                        16,
-                                        1,
-                                        {
-                                            "Doors"
-                                        },
-                                        {
-                                            {
-                                                17,
-                                                2,
-                                                {
-                                                    "Exploits"
-                                                }
-                                            },
-                                            {
-                                                20,
-                                                2,
-                                                {
-                                                    "Visuals"
-                                                }
-                                            },
-                                            {
-                                                18,
-                                                2,
-                                                {
-                                                    "Floor"
-                                                }
-                                            },
-                                            {
-                                                19,
-                                                2,
-                                                {
-                                                    "Main"
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        21,
+                                        44,
                                         1,
                                         {
                                             "Lobby"
                                         },
                                         {
                                             {
-                                                22,
+                                                45,
                                                 2,
                                                 {
-                                                    "Main"
+                                                    "Preset"
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                            },
-                            {
-                                23,
-                                1,
-                                {
-                                    "Universal"
-                                },
-                                {
-                                    {
-                                        24,
-                                        2,
-                                        {
-                                            "Exploits"
-                                        }
                                     },
                                     {
-                                        25,
-                                        2,
+                                        34,
+                                        1,
                                         {
-                                            "Main"
-                                        }
-                                    },
-                                    {
-                                        26,
-                                        2,
+                                            "Doors"
+                                        },
                                         {
-                                            "Visuals"
+                                            {
+                                                41,
+                                                2,
+                                                {
+                                                    "Minecarts"
+                                                }
+                                            },
+                                            {
+                                                40,
+                                                2,
+                                                {
+                                                    "Entities"
+                                                }
+                                            },
+                                            {
+                                                38,
+                                                2,
+                                                {
+                                                    "ConnectionsFuncs"
+                                                }
+                                            },
+                                            {
+                                                36,
+                                                2,
+                                                {
+                                                    "AutoWardrobe"
+                                                }
+                                            },
+                                            {
+                                                42,
+                                                2,
+                                                {
+                                                    "Padlock"
+                                                }
+                                            },
+                                            {
+                                                43,
+                                                2,
+                                                {
+                                                    "Player"
+                                                }
+                                            },
+                                            {
+                                                35,
+                                                2,
+                                                {
+                                                    "Assets"
+                                                }
+                                            },
+                                            {
+                                                37,
+                                                2,
+                                                {
+                                                    "BreakerBox"
+                                                }
+                                            },
+                                            {
+                                                39,
+                                                2,
+                                                {
+                                                    "ESP"
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                }
+            },
+            {
+                52,
+                1,
+                {
+                    "Utils"
+                },
+                {
+                    {
+                        67,
+                        1,
+                        {
+                            "Universal"
+                        },
+                        {
+                            {
+                                68,
+                                2,
+                                {
+                                    "ControlModule"
+                                }
+                            },
+                            {
+                                69,
+                                2,
+                                {
+                                    "Fly"
+                                }
+                            },
+                            {
+                                70,
+                                2,
+                                {
+                                    "Twerk"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        66,
+                        2,
+                        {
+                            "Services"
+                        }
+                    },
+                    {
+                        57,
+                        1,
+                        {
+                            "GUI"
+                        },
+                        {
+                            {
+                                60,
+                                1,
+                                {
+                                    "Notifiers"
+                                },
+                                {
+                                    {
+                                        62,
+                                        2,
+                                        {
+                                            "Linoria"
+                                        }
+                                    },
+                                    {
+                                        61,
+                                        2,
+                                        {
+                                            "Doors"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                59,
+                                2,
+                                {
+                                    "Creator"
+                                }
+                            },
+                            {
+                                63,
+                                2,
+                                {
+                                    "Notify"
+                                }
+                            },
+                            {
+                                58,
+                                2,
+                                {
+                                    "Addons"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        53,
+                        2,
+                        {
+                            "BloxstrapRPC"
+                        }
+                    },
+                    {
+                        65,
+                        2,
+                        {
+                            "Logs"
+                        }
+                    },
+                    {
+                        56,
+                        2,
+                        {
+                            "FileHelper"
+                        }
+                    },
+                    {
+                        64,
+                        2,
+                        {
+                            "Loader"
+                        }
+                    },
+                    {
+                        55,
+                        2,
+                        {
+                            "ExecutorSupport"
+                        }
+                    },
+                    {
+                        54,
+                        2,
+                        {
+                            "Connections"
+                        }
+                    }
+                }
+            },
+            {
+                2,
+                2,
+                {
+                    "Mappings"
                 }
             }
         }
@@ -10474,50 +11311,53 @@ local LineOffsets = {
     8,
     136,
     [6] = 162,
-    [7] = 1751,
-    [8] = 1923,
-    [9] = 2026,
-    [12] = 2201,
-    [13] = 2369,
-    [14] = 2605,
-    [17] = 2926,
-    [18] = 3740,
-    [19] = 4699,
-    [20] = 5016,
-    [22] = 5923,
-    [24] = 6149,
-    [25] = 6225,
-    [26] = 6362,
-    [30] = 6653,
-    [31] = 6873,
-    [32] = 7124,
-    [33] = 7226,
-    [34] = 7620,
-    [35] = 7956,
-    [36] = 8077,
-    [37] = 8418,
-    [38] = 8455,
-    [40] = 8510,
-    [42] = 8596,
-    [43] = 8665,
-    [44] = 8694,
-    [45] = 8776,
-    [46] = 8883,
-    [48] = 8912,
-    [49] = 8953,
-    [50] = 8970,
-    [51] = 9149,
-    [53] = 9238,
-    [54] = 9424,
-    [56] = 9554,
-    [57] = 9654,
-    [58] = 9683,
-    [59] = 9720,
-    [60] = 9731,
-    [61] = 9784,
-    [63] = 9804,
-    [64] = 9867,
-    [65] = 9930
+    [8] = 530,
+    [9] = 2119,
+    [10] = 2291,
+    [11] = 2394,
+    [14] = 2569,
+    [15] = 2737,
+    [16] = 2973,
+    [19] = 3294,
+    [20] = 4112,
+    [21] = 5073,
+    [22] = 5392,
+    [24] = 6299,
+    [26] = 6525,
+    [27] = 6601,
+    [28] = 6738,
+    [31] = 7029,
+    [32] = 7320,
+    [35] = 7451,
+    [36] = 7671,
+    [37] = 7922,
+    [38] = 8024,
+    [39] = 8418,
+    [40] = 8754,
+    [41] = 8875,
+    [42] = 9216,
+    [43] = 9253,
+    [45] = 9308,
+    [47] = 9394,
+    [48] = 9463,
+    [49] = 9492,
+    [50] = 9574,
+    [51] = 9681,
+    [53] = 9710,
+    [54] = 9751,
+    [55] = 9768,
+    [56] = 9947,
+    [58] = 10036,
+    [59] = 10222,
+    [61] = 10361,
+    [62] = 10461,
+    [63] = 10490,
+    [64] = 10527,
+    [65] = 10538,
+    [66] = 10591,
+    [68] = 10611,
+    [69] = 10674,
+    [70] = 10737
 }
 
 -- Misc AOT variable imports
