@@ -10308,8 +10308,6 @@ function UICreator:CreateSettingsTab()
     CreditsGroup:AddLabel("bacalhauz")
 
     shared.Library.ToggleKeybind = shared.Options.MenuKeybind
-
-	return sfc
 	
     ThemeManager:SetLibrary(shared.Library)
     SaveManager:SetLibrary(shared.Library)
