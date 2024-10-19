@@ -5291,16 +5291,16 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
         })
     end
     if Script.IsHotel then
-		global Siw="hotel"
-		print("HotelSdcardSaveConfigureLog")
+		Siw="hotel"
         SaveManager:SetFolder("mspaint/doors/"..Siw)
 	elseif Script.IsMines then
-		global Siw="mines"
+		Siw="mines"
 	elseif Script.IsBackdoor then
-		global Siw="backdoor"
+		Siw="backdoor"
 	elseif Script.IsRooms then
-		global Siw="rooms"
-	end
+		Siw="rooms"
+    end
+    return Siw
 end
 
 local MiscGroupBox = Tabs.Main:AddRightGroupbox("杂项") do
@@ -11787,7 +11787,7 @@ function ImportGlobals(refId)
                 local RealIndex = PathMatch
                 if PathMatch == ".." then
                     RealIndex = "Parent"
-               end
+                end
 
                 -- Don't advance dir if it's just another "/" either
                 if RealIndex ~= "" then
