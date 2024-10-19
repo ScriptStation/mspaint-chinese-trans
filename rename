@@ -5290,17 +5290,7 @@ local AutomationGroupBox = Tabs.Main:AddRightGroupbox("自动化") do
             Default = false
         })
     end
-    if Script.IsHotel then
-		Siw="hotel"
-        SaveManager:SetFolder("mspaint/doors/"..Siw)
-	elseif Script.IsMines then
-		Siw="mines"
-	elseif Script.IsBackdoor then
-		Siw="backdoor"
-	elseif Script.IsRooms then
-		Siw="rooms"
-    end
-    return Siw
+
 end
 
 local MiscGroupBox = Tabs.Main:AddRightGroupbox("杂项") do
@@ -10312,8 +10302,19 @@ function UICreator:CreateSettingsTab()
     ThemeManager:SetLibrary(shared.Library)
     SaveManager:SetLibrary(shared.Library)
 	SaveManager:IgnoreThemeSettings()
-	
-	SaveManager:SetFolder("mspaint/doors/"..Siw)
+    if Script.IsHotel then
+		Siw="/hotel"
+        print("Dectet Success")
+	elseif Script.IsMines then
+		Siw="/mines"
+	elseif Script.IsBackdoor then
+		Siw="/backdoor"
+	elseif Script.IsRooms then
+		Siw="/rooms"
+    else
+        Siw="/doors"
+    end
+	SaveManager:SetFolder("mspaint/doors"..Siw)
 	SaveManager:BuildConfigSection(SettingsTab)
 	ThemeManager:ApplyToTab(SettingsTab)
 	
