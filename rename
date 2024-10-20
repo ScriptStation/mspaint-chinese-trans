@@ -274,24 +274,14 @@ function UICreator:CreateSettingsTab()
 
     SaveManager:IgnoreThemeSettings()
 
-    if not isfolder("mspaint/doors/hotel") then
-        makefolder("mspaint/doors/hotel")
-    elseif not isfolder("mspaint/doors/mines") then
-        makefolder("mspaint/doors/mines")
-    elseif not isfolder("mspaint/doors/backdoor") then
-        makefolder("mspaint/doors/backdoor")
-    elseif not isfolder("mspaint/doors/rooms") then
-        makefolder("mspaint/doors/rooms")
-    end    
-
-    if Script.IsHotel then
-        SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif Scipt.IsMines then
-        SaveManager:SetFolder("mspaint/doors/mines")
-    elseif Script.IsBackdoor then
-        SaveManager:SetFolder("mspaint/doors/backdoor")
-    elseif Script.IsRooms then
-        SaveManager:SetFolder("mspaint/doors/rooms")
+    if game:GetService("ReplicatedStorage").GameData.Floor.Value == "Hotel" then 
+        SaveManager:SetFolder("mspaint/doors/hotel") 
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Mines" then 
+        SaveManager:SetFolder("mspaint/doors/mines") 
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Backdoor" then 
+        SaveManager:SetFolder("mspaint/doors/backdoor") 
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Rooms" then 
+        SaveManager:SetFolder("mspaint/doors/rooms") 
     end
 
     SaveManager:BuildConfigSection(SettingsTab)
@@ -12117,4 +12107,4 @@ end
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
-print("Debug Infos")
+print("new content")
