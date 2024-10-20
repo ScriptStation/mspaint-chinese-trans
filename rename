@@ -1,11 +1,12 @@
---[[
-    This script is NOT intended to be modified.
-    To view the source code, see the 'Src' folder on the official GitHub repository.
-
-    Authors: upio, deivid, mstudio45 & bacalhauz
-    GitHub: https://github.com/notpoiu/mspaint
-    Discord: https://discord.gg/mspaint
---]]
+if not isfolder("mspaint/doors/hotel") then
+    makefolder("mspaint/doors/hotel")
+elseif not isfolder("mspaint/doors/mines") then
+    makefolder("mspaint/doors/mines")
+elseif not isfolder("mspaint/doors/backdoor") then
+    makefolder("mspaint/doors/backdoor")
+elseif not isfolder("mspaint/doors/rooms") then
+    makefolder("mspaint/doors/rooms")
+end
 
 -- ++++++++ WAX BUNDLED DATA BELOW ++++++++ --
 
@@ -301,7 +302,8 @@ end
 
 return UICreator
 end)() end,
-    [21] = function()local wax,script,require=ImportGlobals(21)local ImportGlobals return (function(...)--// Linoria \\--
+    [21] = function()local wax,script,require=ImportGlobals(21)local ImportGlobals return (function(...)
+--// Linoria \\--
 local Toggles = shared.Toggles
 local Options = shared.Options
 
@@ -12107,4 +12109,3 @@ end
 for _, ScriptRef in next, ScriptsToRun do
     Defer(LoadScript, ScriptRef)
 end
-print("new content")
