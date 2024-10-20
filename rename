@@ -7632,13 +7632,13 @@ function UICreator:CreateSettingsTab()
         makefolder("mspaint/doors/rooms")
     end    
 
-    if Script.IsHotel then
+    if game:GetService("ReplicatedStorage").GameData.Floor.Value == "Hotel" then --Hotel Mines Backdoor Rooms
         SaveManager:SetFolder("mspaint/doors/hotel")
-    elseif Scipt.IsMines then
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Mines" then
         SaveManager:SetFolder("mspaint/doors/mines")
-    elseif Script.IsBackdoor then
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Backdoor" then
         SaveManager:SetFolder("mspaint/doors/backdoor")
-    elseif Script.IsRooms then
+    elseif game:GetService("ReplicatedStorage").GameData.Floor.Value == "Rooms" then
         SaveManager:SetFolder("mspaint/doors/rooms")
     end
 
@@ -7651,7 +7651,7 @@ function UICreator:CreateSettingsTab()
         if not shared.Toggles.ExecuteOnTeleport.Value or getgenv().queued_to_teleport then return end
 
         getgenv().queued_to_teleport = true
-        queue_on_teleport([[ loadstring(game:HttpGet("https://github.com/notpoiu/mspaint/releases/latest/download/Script.luau"))() ]])
+        queue_on_teleport([[ loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptStation/mspaint-chinese-trans/refs/heads/main/rename"))() ]])
     end))
 
     return SettingsTab
