@@ -2616,14 +2616,14 @@ local TrollingGroupBox = Tabs.Exploits:AddLeftGroupbox("Trolling") do
     TrollingGroupBox:AddDivider()
 
     TrollingGroupBox:AddToggle("DeleteAura", {
-        Text = "FE Delete Aura",
+        Text = "删除氛围",
         Default = false,
         Risky = true,
-        Tooltip = "Delete objects within a certain range of your character, this can kick you from the game and i'm too lazy to fix it."
+        Tooltip = "删除对象在你的角色的一定范围内，这可以踢你从游戏中，我懒得修复它"
     })
 
     TrollingGroupBox:AddSlider("DeleteAuraRange", {
-        Text = "Delete Aura Range",
+        Text = "删除氛围范围",
         Default = 15,
         Min = 1,
         Max = 30,
@@ -2634,24 +2634,24 @@ end
 
 local BypassGroupBox = Tabs.Exploits:AddRightGroupbox("Bypass") do
     BypassGroupBox:AddToggle("Godmode", {
-        Text = "Godmode",
+        Text = "神模式",
         Default = false
     })
 
     BypassGroupBox:AddToggle("InfiniteHunger", {
-        Text = "Disable Hunger",
+        Text = "禁用饥饿",
         Default = false,
-        Tooltip = "You will never get hungry, incompatible with Godmode."
+        Tooltip = "你永远不会饥饿,与神模式不相容"
     })
 
     BypassGroupBox:AddToggle("InfiniteEnergy", {
-        Text = "Infinite Energy",
+        Text = "无限能量",
         Default = false,
-        Tooltip = "You will never get tired, incompatible with Godmode."
+        Tooltip = "你永远不会累,与神模式不相容"
     })
 
     BypassGroupBox:AddToggle("InfiniteInventory", {
-        Text = "Infinite Inventory",
+        Text = "无限库存",
         Default = false,
         Visible = wax.shared.ExecutorSupport["require"] and wax.shared.ExecutorSupport["hookmetamethod"] and wax.shared.ExecutorSupport["getnamecallmethod"],
     })
@@ -2757,12 +2757,12 @@ Script.LastSpeed = if shared.Humanoid then shared.Humanoid.WalkSpeed else 16
 --// Main \\--
 local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
     PlayerGroupBox:AddToggle("SpeedHack", {
-        Text = "Speed Hack",
+        Text = "人物速度",
         Default = false
     })
 
     PlayerGroupBox:AddSlider("WalkSpeed", {
-        Text = "Walk Speed",
+        Text = "走路速度",
         Default = 16,
         Min = 0,
         Max = 100,
@@ -2771,12 +2771,12 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
     })
 
     PlayerGroupBox:AddToggle("JumpPowerHack", {
-        Text = "Jump Power Hack",
+        Text = "人物跳跃",
         Default = false
     })
 
     PlayerGroupBox:AddSlider("JumpPower", {
-        Text = "Jump Power",
+        Text = "跳跃高度",
         Default = 50,
         Min = 0,
         Max = 200,
@@ -2787,13 +2787,13 @@ local PlayerGroupBox = Tabs.Main:AddLeftGroupbox("Player") do
     PlayerGroupBox:AddDivider()
 
     PlayerGroupBox:AddToggle("InstantInteract", {
-        Text = "Instant Interact",
+        Text = "一键互动",
         Default = false,
         Visible = wax.shared.ExecutorSupport["hookfunction"] and wax.shared.ExecutorSupport["getcallingscript"]
     })
 
     PlayerGroupBox:AddToggle("NoFall", {
-        Text = "No Fall",
+        Text = "没有摔伤",
         Default = false
     })
 
